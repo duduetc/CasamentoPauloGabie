@@ -1,0 +1,70 @@
+<!-- PIX Payment — Step 2 -->
+<div class="relative">
+
+  <!-- Close button -->
+  <button id="modal-close"
+          onclick="closeModal(event)"
+          class="absolute top-4 right-4 z-10 text-charcoal/40 hover:text-charcoal text-2xl leading-none"
+          aria-label="Fechar">×</button>
+
+  <!-- Header strip -->
+  <div class="bg-charcoal px-8 pt-10 pb-8 text-center">
+    <p class="font-body text-xs tracking-[.35em] uppercase text-cream/40 mb-1">Contribuição para</p>
+    <h2 class="font-display text-2xl text-cream font-light">{{ gift.name }}</h2>
+    <p class="font-script text-sage text-4xl mt-1">R$ {{ "%.2f"|format(amount) }}</p>
+  </div>
+
+  <!-- Body -->
+  <div class="p-8 text-center">
+
+    <p class="font-body text-sm text-charcoal/60 mb-6">
+      Escaneie o QR Code abaixo com o app do seu banco para realizar o pagamento via PIX.
+    </p>
+
+    <!-- QR Code image -->
+    <div class="inline-block border border-charcoal/10 p-4 mb-6 rounded-sm shadow-sm">
+      <img src="{{ pix_qr }}"
+           alt="QR Code PIX"
+           class="w-52 h-52 object-contain mx-auto"
+           onerror="this.style.display='none'; document.getElementById('qr-placeholder').style.display='flex'">
+      <!-- Placeholder if image missing -->
+      <div id="qr-placeholder"
+           style="display:none"
+           class="w-52 h-52 bg-cream items-center justify-center flex-col gap-2 text-center">
+        <div class="grid grid-cols-3 gap-1 w-24 h-24 opacity-30">
+          {% for _ in range(9) %}
+          <div class="bg-charcoal rounded-sm"></div>
+          {% endfor %}
+        </div>
+        <p class="font-body text-xs text-muted">QR Code PIX</p>
+      </div>
+    </div>
+
+    <p class="font-body text-xs text-muted mb-3 tracking-widest uppercase">Ou copie o código PIX</p>
+
+    <!-- Copy paste area -->
+    <div class="bg-cream border border-charcoal/10 rounded-sm px-4 py-3 mb-4 text-left">
+      <p id="pix-code-text"
+         class="font-body text-xs text-charcoal/50 break-all leading-relaxed select-all">
+        {{ pix_code }}
+      </p>
+    </div>
+
+    <button id="copy-btn"
+            onclick="copyPix('{{ pix_code }}')"
+            class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300 mb-3">
+      Copiar código PIX
+    </button>
+
+    <button onclick="closeModal({target: document.getElementById('modal-backdrop')})"
+            class="w-full font-body text-xs tracking-widest uppercase py-3 text-muted hover:text-charcoal transition-colors duration-200">
+      Fechar
+    </button>
+
+    <!-- Love note -->
+    <div class="mt-8 pt-6 border-t border-charcoal/8">
+      <p class="font-script text-sage text-xl">Obrigado pelo carinho! 🌿</p>
+      <p class="font-body text-xs text-muted mt-1">Paulo & Gabie</p>
+    </div>
+  </div>
+</div>

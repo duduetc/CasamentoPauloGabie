@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Paulo & Gabie{% endblock %}</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+  <!-- Google Fonts approximations (IvyOra → Cormorant Garamond; script → Dancing Script) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Dancing+Script:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream:   '#F5F0E8',
+            noir:    '#111111',
+            charcoal:'#2D2D2B',
+            sage:    '#7A9E7E',
+            muted:   '#808080',
+          },
+          fontFamily: {
+            script:  ['"Dancing Script"', 'cursive'],
+            display: ['"Cormorant Garamond"', 'serif'],
+            body:    ['"EB Garamond"', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background-color: #F5F0E8; color: #111111; font-family: 'EB Garamond', serif; }
+
+    /* thin horizontal rule used in brand guide */
+    .rule { border-top: 1px solid #2D2D2B; width: 2rem; }
+
+    /* nav link hover */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: #7A9E7E;
+      transition: width .35s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* modal backdrop */
+    #modal-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(17,17,17,.55);
+      backdrop-filter: blur(4px);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-backdrop.open { display: flex; }
+  </style>
+
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen">
+
+  <!-- ── Navigation ─────────────────────────────────────────────── -->
+  <nav class="fixed top-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-sm border-b border-charcoal/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="font-script text-2xl text-charcoal tracking-wide">P & G</a>
+      <ul class="flex gap-8 text-sm font-body tracking-widest uppercase text-charcoal/70">
+        <li><a href="/" class="nav-link hover:text-charcoal transition-colors">Início</a></li>
+        <li><a href="/presentes" class="nav-link hover:text-charcoal transition-colors">Presentes</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Page content ───────────────────────────────────────────── -->
+  <main class="pt-16">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────────── -->
+  <footer class="border-t border-charcoal/10 py-10 mt-24">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="font-script text-xl text-charcoal/60">Paulo & Gabie</p>
+      <p class="font-body text-xs text-muted tracking-widest uppercase">Com amor — 2026</p>
+    </div>
+  </footer>
+
+  <!-- ── Modal backdrop ─────────────────────────────────────────── -->
+  <div id="modal-backdrop" onclick="closeModal(event)">
+    <div id="modal-content" class="relative bg-cream w-full max-w-lg mx-4 rounded-sm shadow-2xl max-h-[90vh] overflow-y-auto">
+      <!-- filled by HTMX -->
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('modal-backdrop').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(e) {
+      if (e.target === document.getElementById('modal-backdrop') || e.currentTarget === document.getElementById('modal-close')) {
+        document.getElementById('modal-backdrop').classList.remove('open');
+        document.body.style.overflow = '';
+        document.getElementById('modal-content').innerHTML = '';
+      }
+    }
+    // open modal after HTMX loads content into #modal-content
+    document.body.addEventListener('htmx:afterSwap', function(e) {
+      if (e.detail.target.id === 'modal-content') openModal();
+    });
+
+    // copy PIX code helper
+    function copyPix(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copy-btn');
+        if (!btn) return;
+        btn.textContent = 'Copiado!';
+        btn.classList.add('bg-sage','text-cream');
+        setTimeout(() => {
+          btn.textContent = 'Copiar código PIX';
+          btn.classList.remove('bg-sage','text-cream');
+        }, 2000);
+      });
+    }
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

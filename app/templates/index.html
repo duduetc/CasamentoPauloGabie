@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block title %}Paulo & Gabie — Nosso Casamento{% endblock %}
+
+{% block head %}
+<style>
+  /* ── Hero ──────────────────────────────────────────── */
+  .hero-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(15%) contrast(1.05);
+  }
+
+  /* Reveal animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp .9s ease both; }
+  .delay-1 { animation-delay: .15s; }
+  .delay-2 { animation-delay: .32s; }
+  .delay-3 { animation-delay: .50s; }
+  .delay-4 { animation-delay: .68s; }
+
+  /* Parallax-like section divider */
+  .divider-script {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px #2D2D2B;
+    opacity: .07;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* Timeline */
+  .timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, #2D2D2B 20%, #2D2D2B 80%, transparent);
+    transform: translateX(-50%);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ────────────────────────────────────────────────────────────
+     HERO
+──────────────────────────────────────────────────────────── -->
+<section class="relative h-screen min-h-[600px] overflow-hidden bg-noir flex items-end">
+
+  <!-- Background photo placeholder (swap src for real couple photo) -->
+  <div class="absolute inset-0">
+    <img src="/static/images/hero.jpg"
+         alt="Paulo e Gabie"
+         class="hero-img"
+         onerror="this.style.display='none'">
+    <!-- gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-noir via-noir/40 to-transparent"></div>
+  </div>
+
+  <!-- Hero text -->
+  <div class="relative z-10 w-full max-w-6xl mx-auto px-6 pb-20">
+    <p class="fade-up font-body text-sm tracking-[.35em] uppercase text-cream/60 mb-4">
+      Convidamos você a celebrar
+    </p>
+    <h1 class="fade-up delay-1 font-script text-cream leading-none"
+        style="font-size: clamp(3.5rem, 10vw, 8rem);">
+      Paulo &amp; Gabie
+    </h1>
+    <p class="fade-up delay-2 font-display text-cream/70 text-xl md:text-2xl font-light mt-3 italic">
+      12 de Setembro de 2026 · São Paulo
+    </p>
+    <div class="fade-up delay-3 mt-8">
+      <a href="/presentes"
+         class="inline-block border border-cream/40 text-cream font-body tracking-widest uppercase text-xs px-8 py-3 hover:bg-cream hover:text-noir transition-all duration-300">
+        Lista de Presentes
+      </a>
+    </div>
+  </div>
+
+  <!-- Countdown -->
+  <div class="absolute top-24 right-6 md:right-12 text-right fade-up delay-4">
+    <p id="countdown" class="font-display text-cream/80 text-lg"></p>
+    <p class="font-body text-xs text-cream/40 tracking-widest uppercase mt-1">para o grande dia</p>
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────
+     DECORATIVE MARQUEE
+──────────────────────────────────────────────────────────── -->
+<div class="overflow-hidden py-6 border-y border-charcoal/10 bg-cream">
+  <div class="divider-script animate-[marquee_18s_linear_infinite]">
+    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026 &nbsp;·&nbsp;
+    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026 &nbsp;·&nbsp;
+    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026 &nbsp;·&nbsp;
+    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026
+  </div>
+</div>
+<style>
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+</style>
+
+<!-- ────────────────────────────────────────────────────────────
+     NOSSA HISTÓRIA
+──────────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-6 py-24">
+  <div class="grid md:grid-cols-2 gap-16 items-center">
+
+    <!-- Photo grid -->
+    <div class="grid grid-cols-2 gap-3 relative">
+      <img src="/static/images/couple1.jpg"
+           alt="Foto do casal"
+           class="col-span-2 aspect-[4/3] object-cover rounded-sm"
+           onerror="this.parentElement.querySelector('.ph1').style.display='flex'; this.style.display='none'">
+      <div class="ph1 col-span-2 aspect-[4/3] bg-charcoal/8 rounded-sm hidden items-center justify-center">
+        <span class="font-script text-4xl text-charcoal/20">P &amp; G</span>
+      </div>
+      <img src="/static/images/couple2.jpg"
+           alt="Foto do casal"
+           class="aspect-square object-cover rounded-sm"
+           onerror="this.parentElement.querySelector('.ph2').style.display='flex'; this.style.display='none'">
+      <div class="ph2 aspect-square bg-sage/15 rounded-sm hidden items-center justify-center">
+        <span class="font-script text-2xl text-sage/40">2022</span>
+      </div>
+      <img src="/static/images/couple3.jpg"
+           alt="Foto do casal"
+           class="aspect-square object-cover rounded-sm"
+           onerror="this.parentElement.querySelector('.ph3').style.display='flex'; this.style.display='none'">
+      <div class="ph3 aspect-square bg-charcoal/5 rounded-sm hidden items-center justify-center">
+        <span class="font-script text-2xl text-charcoal/20">amor</span>
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div>
+      <p class="font-body text-xs tracking-[.3em] uppercase text-muted mb-4">Nossa história</p>
+      <h2 class="font-display text-4xl md:text-5xl font-light leading-tight mb-6">
+        Uma história que começou com um sorriso
+      </h2>
+      <div class="rule mb-6"></div>
+      <p class="font-body text-lg text-charcoal/75 leading-relaxed mb-5">
+        Nos conhecemos em 2019 numa tarde de outubro que nenhum dos dois esquece. Desde então, cada dia juntos foi uma nova razão para sorrir.
+      </p>
+      <p class="font-body text-lg text-charcoal/75 leading-relaxed">
+        Em setembro de 2026, vamos celebrar o amor que construímos — e queremos que você faça parte desse momento tão especial.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────
+     TIMELINE
+──────────────────────────────────────────────────────────── -->
+<section class="bg-charcoal py-24">
+  <div class="max-w-3xl mx-auto px-6">
+    <p class="font-body text-xs tracking-[.3em] uppercase text-cream/40 text-center mb-2">Momentos</p>
+    <h2 class="font-display text-4xl text-cream font-light text-center mb-16">Nossa linha do tempo</h2>
+
+    <div class="relative">
+      <div class="timeline-line"></div>
+
+      {% set events = [
+        ("2019", "Primeiro encontro", "Uma tarde de outubro que mudou tudo."),
+        ("2021", "Primeira viagem juntos", "Lisboa nos ensinou que somos parceiros de vida."),
+        ("2023", "Noivado", "Ele pediu em casamento ao pôr do sol na Praia da Joaquina."),
+        ("2026", "Casamento", "12 de setembro — o dia mais especial de nossas vidas."),
+      ] %}
+
+      {% for year, title, desc in events %}
+      <div class="flex items-center gap-8 mb-14 {% if loop.index is even %}flex-row-reverse{% endif %}">
+        <div class="w-1/2 {% if loop.index is even %}text-left{% else %}text-right{% endif %} pr-8 pl-8">
+          <p class="font-script text-sage text-2xl mb-1">{{ year }}</p>
+          <h3 class="font-display text-cream text-xl font-light">{{ title }}</h3>
+          <p class="font-body text-cream/50 text-sm mt-1">{{ desc }}</p>
+        </div>
+        <div class="relative z-10 w-3 h-3 rounded-full bg-sage border-2 border-charcoal flex-shrink-0"></div>
+        <div class="w-1/2"></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────
+     INFORMAÇÕES DO EVENTO
+──────────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-6 py-24">
+  <p class="font-body text-xs tracking-[.3em] uppercase text-muted text-center mb-2">Detalhes</p>
+  <h2 class="font-display text-4xl font-light text-center mb-16">O grande dia</h2>
+
+  <div class="grid md:grid-cols-3 gap-px bg-charcoal/10">
+    {% set details = [
+      ("📍", "Local", "Espaço Villa São Paulo\nAv. Brigadeiro Faria Lima, 2000"),
+      ("🕔", "Horário", "Cerimônia às 16h\nRecepção às 19h"),
+      ("👗", "Traje", "Black Tie\nConvidados são bem-vindos de preto"),
+    ] %}
+    {% for icon, label, text in details %}
+    <div class="bg-cream p-10 text-center flex flex-col items-center gap-3">
+      <span class="text-3xl">{{ icon }}</span>
+      <p class="font-body text-xs tracking-[.3em] uppercase text-muted">{{ label }}</p>
+      <p class="font-display text-xl font-light leading-snug whitespace-pre-line">{{ text }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────
+     CTA PRESENTES
+──────────────────────────────────────────────────────────── -->
+<section class="bg-sage py-20 text-center">
+  <p class="font-body text-xs tracking-[.35em] uppercase text-cream/60 mb-3">Lista de presentes</p>
+  <h2 class="font-script text-cream mb-6" style="font-size: clamp(2.5rem,6vw,4.5rem);">
+    Surpreenda-nos com carinho
+  </h2>
+  <p class="font-body text-cream/80 text-lg max-w-md mx-auto mb-10">
+    Sua presença já é o maior presente. Mas se quiser nos dar algo especial, confira nossa lista.
+  </p>
+  <a href="/presentes"
+     class="inline-block bg-cream text-charcoal font-body tracking-widest uppercase text-xs px-10 py-4 hover:bg-noir hover:text-cream transition-all duration-300">
+    Ver lista de presentes
+  </a>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Countdown timer
+  const weddingDate = new Date('2026-09-12T16:00:00');
+  function updateCountdown() {
+    const now = new Date();
+    const diff = weddingDate - now;
+    if (diff <= 0) { document.getElementById('countdown').textContent = 'Hoje é o grande dia!'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m`;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+</script>
+{% endblock %}
