@@ -11,10 +11,19 @@
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
-  <!-- Google Fonts approximations (IvyOra → Cormorant Garamond; script → Dancing Script) -->
+  <!-- Altesse Std (local) + Google Fonts (IvyOra Display → Cormorant Garamond; Baskerville Pro → Libre Baskerville) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Dancing+Script:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Altesse Std';
+      src: url('/static/fonts/AltesseStd-DEMO-Regular38pt.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
 
   <script>
     tailwind.config = {
@@ -28,9 +37,9 @@
             muted:   '#808080',
           },
           fontFamily: {
-            script:  ['"Dancing Script"', 'cursive'],
+            script:  ['"Altesse Std"', 'cursive'],
             display: ['"Cormorant Garamond"', 'serif'],
-            body:    ['"EB Garamond"', 'serif'],
+            body:    ['"Libre Baskerville"', 'serif'],
           },
         }
       }
@@ -39,7 +48,7 @@
 
   <style>
     html { scroll-behavior: smooth; }
-    body { background-color: #F5F0E8; color: #111111; font-family: 'EB Garamond', serif; }
+    body { background-color: #F5F0E8; color: #111111; font-family: 'Libre Baskerville', serif; }
 
     /* thin horizontal rule used in brand guide */
     .rule { border-top: 1px solid #2D2D2B; width: 2rem; }
@@ -76,7 +85,7 @@
   <!-- ── Navigation ─────────────────────────────────────────────── -->
   <nav class="fixed top-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-sm border-b border-charcoal/10">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/" class="font-script text-2xl text-charcoal tracking-wide">P & G</a>
+      <a href="/"><img src="/static/images/monograma.png" alt="G & P" class="h-10"></a>
       <ul class="flex gap-8 text-sm font-body tracking-widest uppercase text-charcoal/70">
         <li><a href="/" class="nav-link hover:text-charcoal transition-colors">Início</a></li>
         <li><a href="/presentes" class="nav-link hover:text-charcoal transition-colors">Presentes</a></li>
@@ -92,7 +101,7 @@
   <!-- ── Footer ─────────────────────────────────────────────────── -->
   <footer class="border-t border-charcoal/10 py-10 mt-24">
     <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-      <p class="font-script text-xl text-charcoal/60">Gabriela & Paulo Isaque</p>
+      <img src="/static/images/monograma.png" alt="G & P" class="h-12 opacity-60">
       <p class="font-body text-xs text-muted tracking-widest uppercase">Com amor — 2026</p>
     </div>
   </footer>
