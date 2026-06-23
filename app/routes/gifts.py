@@ -61,7 +61,7 @@ GIFTS = [
 PIX_QR_CODE_IMG = "/static/images/pix_qr.png"
 PIX_COPY_PASTE = (
     "00020126580014br.gov.bcb.pix0136example-key-uuid-here5204000053039865802BR"
-    "5913Paulo e Gabie6009SAO PAULO62070503***6304ABCD"
+    "5913Gabriela e Paulo Isaque6009BRASILIA 62070503***6304ABCD"
 )
 
 
