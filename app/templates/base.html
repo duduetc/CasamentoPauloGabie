@@ -53,6 +53,18 @@
     /* thin horizontal rule used in brand guide */
     .rule { border-top: 1px solid #2D2D2B; width: 2rem; }
 
+    /* nav scroll state */
+    #main-nav.scrolled {
+      background: rgba(245,240,232,.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(45,45,43,.1);
+      padding-top: 0; padding-bottom: 0;
+    }
+    #main-nav.scrolled .nav-link { color: rgba(45,45,43,.7); }
+    #main-nav.scrolled .nav-link:hover { color: #2D2D2B; }
+    #main-nav.scrolled .nav-logo { filter: brightness(0.3); }
+    #main-nav.scrolled .nav-links { opacity: 1; }
+
     /* nav link hover */
     .nav-link { position: relative; }
     .nav-link::after {
@@ -64,6 +76,17 @@
       transition: width .35s ease;
     }
     .nav-link:hover::after { width: 100%; }
+
+    /* scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* modal backdrop */
     #modal-backdrop {
@@ -83,12 +106,12 @@
 <body class="min-h-screen">
 
   <!-- ── Navigation ─────────────────────────────────────────────── -->
-  <nav class="fixed top-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-sm border-b border-charcoal/10">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/"><img src="/static/images/monograma.png" alt="G & P" class="h-10"></a>
-      <ul class="flex gap-8 text-sm font-body tracking-widest uppercase text-charcoal/70">
-        <li><a href="/" class="nav-link hover:text-charcoal transition-colors">Início</a></li>
-        <li><a href="/presentes" class="nav-link hover:text-charcoal transition-colors">Presentes</a></li>
+  <nav id="main-nav" class="fixed top-0 left-0 right-0 z-40 transition-all duration-500 bg-transparent">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="/"><img src="/static/images/monograma.png" alt="G & P" class="h-10 nav-logo transition-all duration-500"></a>
+      <ul class="nav-links flex gap-8 text-sm font-body tracking-widest uppercase opacity-0 transition-opacity duration-500">
+        <li><a href="/" class="nav-link text-cream/80 hover:text-cream transition-colors">Início</a></li>
+        <li><a href="/presentes" class="nav-link text-cream/80 hover:text-cream transition-colors">Presentes</a></li>
       </ul>
     </div>
   </nav>
@@ -99,10 +122,9 @@
   </main>
 
   <!-- ── Footer ─────────────────────────────────────────────────── -->
-  <footer class="border-t border-charcoal/10 py-10 mt-24">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-      <img src="/static/images/monograma.png" alt="G & P" class="h-12 opacity-60">
-      <p class="font-body text-xs text-muted tracking-widest uppercase">Com amor — 2026</p>
+  <footer class="border-t border-charcoal/10 py-16 mt-24">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col items-center">
+      <img src="/static/images/monograma.png" alt="G & P" class="h-16 opacity-50">
     </div>
   </footer>
 
@@ -143,6 +165,20 @@
         }, 2000);
       });
     }
+  </script>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 80);
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 
   {% block scripts %}{% endblock %}

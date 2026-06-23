@@ -21,19 +21,6 @@
   .delay-3 { animation-delay: .50s; }
   .delay-4 { animation-delay: .68s; }
 
-  /* Parallax-like section divider */
-  .divider-script {
-    font-family: 'Altesse Std', cursive;
-    font-size: clamp(3rem, 8vw, 6rem);
-    line-height: 1;
-    color: transparent;
-    -webkit-text-stroke: 1px #2D2D2B;
-    opacity: .07;
-    user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
 </style>
 {% endblock %}
 
@@ -42,67 +29,48 @@
 <!-- ────────────────────────────────────────────────────────────
      HERO
 ──────────────────────────────────────────────────────────── -->
-<section class="relative h-screen min-h-[600px] overflow-hidden bg-noir flex items-end">
+<section class="relative h-screen min-h-[600px] overflow-hidden bg-noir flex items-center justify-center">
 
-  <!-- Background photo placeholder (swap src for real couple photo) -->
+  <!-- Background photo -->
   <div class="absolute inset-0">
     <img src="/static/images/MELQ5754.jpg"
          alt="Gabriela e Paulo Isaque"
          class="hero-img"
          onerror="this.style.display='none'">
-    <!-- gradient overlay -->
-    <div class="absolute inset-0 bg-gradient-to-t from-noir via-noir/40 to-transparent"></div>
+    <div class="absolute inset-0 bg-noir/50"></div>
   </div>
 
-  <!-- Hero text -->
-  <div class="relative z-10 w-full max-w-6xl mx-auto px-6 pb-20">
-    <p class="fade-up font-body text-sm tracking-[.35em] uppercase text-cream/60 mb-4">
+  <!-- Hero text — centered -->
+  <div class="relative z-10 text-center px-6">
+    <img src="/static/images/monograma.png" alt="G & P"
+         class="fade-up h-24 md:h-32 mx-auto mb-6 invert brightness-200 opacity-80">
+    <p class="fade-up delay-1 font-body text-sm tracking-[.35em] uppercase text-cream/60 mb-4">
       Convidamos você a celebrar
     </p>
-    <h1 class="fade-up delay-1 font-script text-cream leading-none"
+    <h1 class="fade-up delay-2 font-script text-cream leading-none"
         style="font-size: clamp(3.5rem, 10vw, 8rem);">
       Gabriela &amp; Paulo Isaque
     </h1>
-    <p class="fade-up delay-2 font-display text-cream/70 text-xl md:text-2xl font-light mt-3 italic">
+    <p class="fade-up delay-3 font-display text-cream/70 text-xl md:text-2xl font-light mt-4 italic">
       07 de Setembro de 2026 · Brasília
     </p>
-    <div class="fade-up delay-3 mt-8">
+    <div class="fade-up delay-3 mt-3">
+      <p id="countdown" class="font-display text-cream/60 text-lg"></p>
+    </div>
+    <div class="fade-up delay-4 mt-8">
       <a href="/presentes"
          class="inline-block border border-cream/40 text-cream font-body tracking-widest uppercase text-xs px-8 py-3 hover:bg-cream hover:text-noir transition-all duration-300">
         Lista de Presentes
       </a>
     </div>
   </div>
-
-  <!-- Countdown -->
-  <div class="absolute top-24 right-6 md:right-12 text-right fade-up delay-4">
-    <p id="countdown" class="font-display text-cream/80 text-lg"></p>
-    <p class="font-body text-xs text-cream/40 tracking-widest uppercase mt-1">para o grande dia</p>
-  </div>
 </section>
 
-<!-- ────────────────────────────────────────────────────────────
-     DECORATIVE MARQUEE
-──────────────────────────────────────────────────────────── -->
-<div class="overflow-hidden py-6 border-y border-charcoal/10 bg-cream">
-  <div class="divider-script animate-[marquee_18s_linear_infinite]">
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026
-  </div>
-</div>
-<style>
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-</style>
 
 <!-- ────────────────────────────────────────────────────────────
      NOSSA HISTÓRIA
 ──────────────────────────────────────────────────────────── -->
-<section class="max-w-6xl mx-auto px-6 py-24">
+<section class="max-w-6xl mx-auto px-6 py-24 reveal">
   <div class="grid md:grid-cols-2 gap-16 items-center">
 
     <!-- Photo grid -->
@@ -134,14 +102,14 @@
     <div>
       <p class="font-body text-xs tracking-[.3em] uppercase text-muted mb-4">Nossa história</p>
       <h2 class="font-display text-4xl md:text-5xl font-light leading-tight mb-6">
-        Uma história que começou com um sorriso
+        Nossa história de amor
       </h2>
       <div class="rule mb-6"></div>
       <p class="font-body text-lg text-charcoal/75 leading-relaxed mb-5">
-        Nos conhecemos em 2019 numa tarde de outubro que nenhum dos dois esquece. Desde então, cada dia juntos foi uma nova razão para sorrir.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
       </p>
       <p class="font-body text-lg text-charcoal/75 leading-relaxed">
-        Em setembro de 2026, vamos celebrar o amor que construímos — e queremos que você faça parte desse momento tão especial.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
       </p>
     </div>
   </div>
@@ -150,18 +118,27 @@
 <!-- ────────────────────────────────────────────────────────────
      INFORMAÇÕES DO EVENTO
 ──────────────────────────────────────────────────────────── -->
-<section class="max-w-6xl mx-auto px-6 py-24">
+<section class="max-w-6xl mx-auto px-6 py-24 reveal">
   <p class="font-body text-xs tracking-[.3em] uppercase text-muted text-center mb-2">Detalhes</p>
   <h2 class="font-display text-4xl font-light text-center mb-16">O grande dia</h2>
 
   <div class="grid md:grid-cols-3 gap-px bg-charcoal/10">
     {% set details = [
-      ("Local", "A definir"),
-      ("Horário", "A definir"),
-      ("Traje", "A definir"),
+      ("map-pin", "Local", "A definir"),
+      ("clock", "Horário", "A definir"),
+      ("hanger", "Traje", "A definir"),
     ] %}
-    {% for label, text in details %}
-    <div class="bg-cream p-10 text-center flex flex-col items-center gap-3">
+    {% for icon, label, text in details %}
+    <div class="bg-cream p-10 text-center flex flex-col items-center gap-4">
+      <svg class="w-8 h-8 text-sage" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        {% if icon == "map-pin" %}
+        <path d="M12 21c-4-4-8-7.33-8-11a8 8 0 1 1 16 0c0 3.67-4 7-8 11z"/><circle cx="12" cy="10" r="3"/>
+        {% elif icon == "clock" %}
+        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+        {% elif icon == "hanger" %}
+        <path d="M12 3a2 2 0 0 1 2 2c0 1.1-.9 2-2 2m0 0L3 17h18L12 7z"/>
+        {% endif %}
+      </svg>
       <p class="font-body text-xs tracking-[.3em] uppercase text-muted">{{ label }}</p>
       <p class="font-display text-xl font-light leading-snug whitespace-pre-line">{{ text }}</p>
     </div>
@@ -172,16 +149,16 @@
 <!-- ────────────────────────────────────────────────────────────
      CTA PRESENTES
 ──────────────────────────────────────────────────────────── -->
-<section class="bg-sage py-20 text-center">
-  <p class="font-body text-xs tracking-[.35em] uppercase text-cream/60 mb-3">Lista de presentes</p>
+<section class="bg-charcoal py-20 text-center reveal">
+  <p class="font-body text-xs tracking-[.35em] uppercase text-cream/40 mb-3">Lista de presentes</p>
   <h2 class="font-script text-cream mb-6" style="font-size: clamp(2.5rem,6vw,4.5rem);">
     Surpreenda-nos com carinho
   </h2>
-  <p class="font-body text-cream/80 text-lg max-w-md mx-auto mb-10">
+  <p class="font-body text-cream/60 text-lg max-w-md mx-auto mb-10">
     Sua presença já é o maior presente. Mas se quiser nos dar algo especial, confira nossa lista.
   </p>
   <a href="/presentes"
-     class="inline-block bg-cream text-charcoal font-body tracking-widest uppercase text-xs px-10 py-4 hover:bg-noir hover:text-cream transition-all duration-300">
+     class="inline-block border border-cream/30 text-cream font-body tracking-widest uppercase text-xs px-10 py-4 hover:bg-cream hover:text-charcoal transition-all duration-300">
     Ver lista de presentes
   </a>
 </section>
