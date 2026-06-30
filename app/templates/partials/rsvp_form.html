@@ -1,1 +1,220 @@
-{# Fragmento futuro do formulário HTMX de confirmação RSVP. #}
+{% if step == "search_results" %}
+  {% if not results %}
+    <div class="bg-amber-50 text-amber-800 border border-amber-200 p-4 rounded-sm font-body text-center space-y-2">
+      <p class="font-medium">Nenhum convite encontrado com o nome "{{ search_query }}".</p>
+      <p class="text-sm opacity-80">Por favor, tente buscar de outra forma (ex: apenas o primeiro nome) ou entre em contato com os noivos.</p>
+    </div>
+  {% else %}
+    <div class="space-y-4">
+      <p class="font-body text-charcoal/70 text-sm text-center">Encontramos {{ results|length }} convite(s) correspondente(s):</p>
+      
+      <div class="space-y-2">
+        {% for group in results %}
+          <div class="border border-charcoal/10 rounded-sm p-4 hover:border-sage transition-all duration-200 flex flex-col md:flex-row justify-between items-center gap-4 bg-cream/10">
+            <div class="text-center md:text-left">
+              <p class="font-display text-lg text-charcoal font-medium">{{ group.name }}</p>
+              <p class="font-body text-xs text-muted">Limite total de convidados: {{ group.max_guests }} {% if group.max_guests == 1 %}pessoa{% else %}pessoas{% endif %}</p>
+              {% if group.status == 'confirmed' %}
+                <span class="inline-block mt-1 text-[11px] uppercase tracking-widest bg-sage/20 text-sage font-body px-2 py-0.5 rounded-sm">Confirmado</span>
+              {% elif group.status == 'declined' %}
+                <span class="inline-block mt-1 text-[11px] uppercase tracking-widest bg-red-100 text-red-700 font-body px-2 py-0.5 rounded-sm">Não Comparecerá</span>
+              {% endif %}
+            </div>
+            
+            <button hx-get="/confirmacao/{{ group.id }}/form"
+                    hx-target="#rsvp-container"
+                    hx-swap="innerHTML"
+                    class="w-full md:w-auto bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase px-6 py-2.5 rounded-sm transition-all duration-300">
+              {% if group.status != 'pending' %}Alterar Resposta{% else %}Responder RSVP{% endif %}
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+{% elif step == "confirm_form" %}
+  <div class="space-y-6">
+    <div class="text-center">
+      <p class="font-body text-xs text-muted tracking-widest uppercase mb-1">Respondendo para</p>
+      <h3 class="font-display text-2xl text-charcoal font-light">{{ group.name }}</h3>
+      <p class="font-body text-xs text-charcoal/50 mt-1">Limite do convite: {{ group.max_guests }} {% if group.max_guests == 1 %}pessoa{% else %}pessoas{% endif %}</p>
+    </div>
+
+    <!-- Toggle between Confirm and Decline -->
+    <div class="flex border-b border-charcoal/10" id="rsvp-tabs">
+      <button onclick="switchTab('confirm-pane', 'decline-pane', this)"
+              class="flex-1 pb-3 text-sm font-body tracking-wider border-b-2 border-sage text-sage font-medium focus:outline-none">
+        Confirmar Presença
+      </button>
+      <button onclick="switchTab('decline-pane', 'confirm-pane', this)"
+              class="flex-1 pb-3 text-sm font-body tracking-wider border-b-2 border-transparent text-charcoal/40 hover:text-charcoal transition-colors focus:outline-none">
+        Não poderei comparecer
+      </button>
+    </div>
+
+    <!-- CONFIRM PANE -->
+    <div id="confirm-pane" class="space-y-6">
+      <form hx-post="/confirmacao/{{ group.id }}/confirmar"
+            hx-target="#rsvp-container"
+            hx-swap="innerHTML"
+            class="space-y-5">
+        
+        <p class="font-body text-xs text-charcoal/60 leading-relaxed italic">
+          Marque os presentes e preencha os nomes individuais. O total de pessoas não pode ultrapassar o limite do convite.
+        </p>
+
+        <!-- Main Guest slot -->
+        {% set suggested_main = group.name.replace(' e família', '').replace(' e acompanhante', '').replace(' e cônjuge', '').replace(' e Acompanhante', '') %}
+        <div class="border border-charcoal/10 rounded-sm p-4 bg-cream/5">
+          <div class="flex items-start gap-3">
+            <div class="flex items-center h-5">
+              <input id="attending_main"
+                     name="attending_main"
+                     type="checkbox"
+                     checked
+                     onchange="toggleInput(this, 'main_name')"
+                     class="w-4 h-4 text-sage border-charcoal/20 rounded focus:ring-sage">
+            </div>
+            <div class="flex-1">
+              <label for="attending_main" class="font-display text-base text-charcoal font-medium block">
+                Eu vou comparecer
+              </label>
+              <div class="mt-2">
+                <input type="text"
+                       id="main_name"
+                       name="main_name"
+                       value="{% if group.status == 'confirmed' and group.confirmed_names %}{{ group.confirmed_names[0] }}{% else %}{{ suggested_main }}{% endif %}"
+                       required
+                       placeholder="Seu nome completo"
+                       class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Companions slots -->
+        {% if group.max_guests > 1 %}
+          <div class="space-y-3">
+            <h4 class="font-display text-sm uppercase tracking-wider text-charcoal/60">Acompanhantes adicionais (Máx: {{ group.max_guests - 1 }})</h4>
+            
+            {% for i in range(group.max_guests - 1) %}
+              {% set current_val = "" %}
+              {% if group.status == 'confirmed' and group.confirmed_names and group.confirmed_names|length > (i + 1) %}
+                {% set current_val = group.confirmed_names[i + 1] %}
+              {% endif %}
+              
+              <div class="border border-charcoal/10 rounded-sm p-4 bg-cream/5">
+                <div class="flex items-start gap-3">
+                  <div class="flex items-center h-5">
+                    <input id="attending_comp_{{ i }}"
+                           type="checkbox"
+                           {% if current_val %}checked{% endif %}
+                           onchange="toggleInput(this, 'companion_name_{{ i }}')"
+                           class="w-4 h-4 text-sage border-charcoal/20 rounded focus:ring-sage">
+                  </div>
+                  <div class="flex-1">
+                    <label for="attending_comp_{{ i }}" class="font-display text-base text-charcoal font-light block">
+                      Acompanhante {{ i + 1 }} vai comparecer
+                    </label>
+                    <div class="mt-2 {% if not current_val %}hidden{% endif %}" id="comp_input_container_{{ i }}">
+                      <input type="text"
+                             id="companion_name_{{ i }}"
+                             name="companion_name_{{ i }}"
+                             value="{{ current_val }}"
+                             {% if current_val %}required{% endif %}
+                             placeholder="Nome completo do acompanhante"
+                             class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="flex gap-3">
+          <button type="button"
+                  hx-get="/confirmacao"
+                  hx-target="#rsvp-container"
+                  hx-swap="innerHTML"
+                  class="flex-1 border border-charcoal/20 hover:bg-charcoal/5 font-body text-xs tracking-widest uppercase py-3 transition-all duration-300">
+            Voltar
+          </button>
+          <button type="submit"
+                  class="flex-2 bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase py-3 px-6 transition-all duration-300">
+            Confirmar Presença
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- DECLINE PANE -->
+    <div id="decline-pane" class="hidden space-y-6">
+      <form hx-post="/confirmacao/{{ group.id }}/declinar"
+            hx-target="#rsvp-container"
+            hx-swap="innerHTML"
+            class="space-y-5">
+        
+        <p class="font-body text-charcoal/70 text-sm leading-relaxed text-center">
+          Sentiremos muito a sua falta! Se desejar, deixe uma mensagem rápida para Paulo e Gabie:
+        </p>
+
+        <div>
+          <textarea name="declined_reason"
+                    rows="3"
+                    placeholder="Deixe seu carinho aqui... (Opcional)"
+                    class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm resize-none">{% if group.status == 'declined' and group.declined_reason %}{{ group.declined_reason }}{% endif %}</textarea>
+        </div>
+
+        <div class="flex gap-3">
+          <button type="button"
+                  hx-get="/confirmacao"
+                  hx-target="#rsvp-container"
+                  hx-swap="innerHTML"
+                  class="flex-1 border border-charcoal/20 hover:bg-charcoal/5 font-body text-xs tracking-widest uppercase py-3 transition-all duration-300">
+            Voltar
+          </button>
+          <button type="submit"
+                  class="flex-2 bg-charcoal text-cream hover:bg-red-700 font-body text-xs tracking-widest uppercase py-3 px-6 transition-all duration-300">
+            Enviar Resposta
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tab switcher JS -->
+    <script>
+      function switchTab(activeId, inactiveId, tabBtn) {
+        document.getElementById(activeId).classList.remove('hidden');
+        document.getElementById(inactiveId).classList.add('hidden');
+        
+        // Update tab styling
+        const buttons = tabBtn.parentElement.getElementsByTagName('button');
+        for (let btn of buttons) {
+          if (btn === tabBtn) {
+            btn.classList.add('border-sage', 'text-sage', 'font-medium');
+            btn.classList.remove('border-transparent', 'text-charcoal/40');
+          } else {
+            btn.classList.remove('border-sage', 'text-sage', 'font-medium');
+            btn.classList.add('border-transparent', 'text-charcoal/40');
+          }
+        }
+      }
+
+      function toggleInput(checkbox, inputId) {
+        const input = document.getElementById(inputId);
+        const container = input.closest('div'); // container para esconder/mostrar de forma limpa
+        
+        if (checkbox.checked) {
+          container.classList.remove('hidden');
+          input.setAttribute('required', 'required');
+        } else {
+          container.classList.add('hidden');
+          input.removeAttribute('required');
+          input.value = '';
+        }
+      }
+    </script>
+  </div>
+{% endif %}

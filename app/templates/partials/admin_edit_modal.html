@@ -1,0 +1,64 @@
+<!-- Admin Edit Modal -->
+<div class="relative">
+  
+  <!-- Close button -->
+  <button id="modal-close"
+          onclick="closeModal(event)"
+          class="absolute top-4 right-4 z-10 text-charcoal/40 hover:text-charcoal text-2xl leading-none"
+          aria-label="Fechar">×</button>
+
+  <!-- Body -->
+  <div class="p-8">
+    <p class="font-body text-xs tracking-[.3em] uppercase text-muted mb-1">Administração</p>
+    <h2 class="font-display text-2xl font-light text-charcoal mb-6">Editar Convite</h2>
+    
+    {% if error %}
+      <div class="bg-red-50 text-red-700 border border-red-200 p-4 rounded-sm font-body text-sm mb-4">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form hx-post="/admin/convite/{{ group.id }}/editar"
+          hx-target="#modal-content"
+          hx-swap="innerHTML"
+          class="space-y-5">
+      
+      <div>
+        <label class="font-body text-xs tracking-wider text-charcoal/60 uppercase block mb-1">
+          Nome no Convite
+        </label>
+        <input type="text"
+               name="name"
+               value="{{ group.name }}"
+               required
+               class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+      </div>
+
+      <div>
+        <label class="font-body text-xs tracking-wider text-charcoal/60 uppercase block mb-1">
+          Limite de Convidados (Total)
+        </label>
+        <input type="number"
+               name="max_guests"
+               min="1"
+               max="20"
+               value="{{ group.max_guests }}"
+               required
+               class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+      </div>
+
+      <div class="pt-2 flex gap-3">
+        <button type="button"
+                onclick="closeModal({target: document.getElementById('modal-backdrop')})"
+                class="flex-1 border border-charcoal/20 hover:bg-charcoal/5 font-body text-xs tracking-widest uppercase py-3 transition-colors rounded-sm">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="flex-1 bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase py-3 transition-colors rounded-sm">
+          Salvar Alterações
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

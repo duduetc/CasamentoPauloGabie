@@ -1,1 +1,70 @@
-{# Página futura de confirmação RSVP por token do convidado. #}
+{% extends "base.html" %}
+{% block title %}Confirmar Presença — Paulo & Gabie{% endblock %}
+
+{% block head %}
+<style>
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rsvp-card {
+    animation: fadeUp 0.6s ease both;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ── Page Hero ── -->
+<div class="bg-charcoal pt-20 pb-16 text-center">
+  <p class="font-body text-xs tracking-[.35em] uppercase text-cream/40 mb-3">RSVP</p>
+  <h1 class="font-script text-cream" style="font-size: clamp(2.8rem, 7vw, 5rem);">
+    Confirmação de Presença
+  </h1>
+  <p class="font-body text-cream/60 text-lg mt-3 max-w-md mx-auto px-6">
+    Por favor, confirme sua presença até o dia 12 de Agosto de 2026.
+  </p>
+</div>
+
+<!-- ── RSVP Search Section ── -->
+<section class="max-w-xl mx-auto px-6 py-16">
+  <div class="rsvp-card bg-white border border-charcoal/8 rounded-sm shadow-sm p-8 md:p-10">
+    
+    <!-- Search Form -->
+    <div class="mb-8">
+      <h2 class="font-display text-2xl text-charcoal mb-4 font-light text-center">Busque seu convite</h2>
+      <p class="font-body text-charcoal/60 text-sm mb-6 text-center">
+        Digite seu nome (como está no convite) para localizar sua confirmação de presença e a de seus familiares.
+      </p>
+      
+      <form hx-post="/confirmacao/buscar"
+            hx-target="#rsvp-container"
+            hx-swap="innerHTML"
+            class="space-y-4">
+        
+        <div class="flex flex-col md:flex-row gap-2">
+          <input type="text"
+                 name="name"
+                 placeholder="Ex: Cláudio"
+                 required
+                 class="flex-1 bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-4 py-3 outline-none rounded-sm text-base">
+          
+          <button type="submit"
+                  class="bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase px-8 py-3 rounded-sm transition-all duration-300">
+            Buscar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="rule mx-auto my-6 opacity-30"></div>
+
+    <!-- RSVP Dynamic Container (Search Results / Form / Success) -->
+    <div id="rsvp-container">
+      <div class="text-center py-6 text-charcoal/40 font-body italic">
+        Aguardando busca...
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

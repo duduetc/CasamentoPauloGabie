@@ -1,1 +1,199 @@
-{# Página futura da área administrativa dos noivos. #}
+{% extends "base.html" %}
+{% block title %}Painel de Controle RSVP — Paulo & Gabie{% endblock %}
+
+{% block head %}
+<style>
+  .admin-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .admin-card:hover {
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-12">
+  
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 border-b border-charcoal/10 pb-6">
+    <div>
+      <p class="font-body text-xs tracking-[.3em] uppercase text-muted mb-1">Área Restrita dos Noivos</p>
+      <h1 class="font-display text-4xl text-charcoal font-light">Painel de Controle RSVP</h1>
+    </div>
+    <a href="/" class="text-sage font-body text-sm hover:underline flex items-center gap-1">
+      ← Voltar para o site público
+    </a>
+  </div>
+
+  <!-- ── ESTATÍSTICAS ── -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+    <!-- Total Convites -->
+    <div class="admin-card bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs">
+      <p class="font-body text-xs text-muted tracking-widest uppercase">Total Convites</p>
+      <p class="font-display text-3xl text-charcoal font-light mt-2">{{ stats.total_invitations }}</p>
+      <p class="font-body text-xs text-charcoal/50 mt-1">Capacidade total: {{ stats.total_max_guests }} pessoas</p>
+    </div>
+
+    <!-- Confirmados -->
+    <div class="admin-card bg-white border border-charcoal/8 border-l-4 border-l-sage p-6 rounded-sm shadow-xs">
+      <p class="font-body text-xs text-sage tracking-widest uppercase font-medium">Presença Confirmada</p>
+      <p class="font-display text-3xl text-sage font-medium mt-2">{{ stats.total_confirmed }}</p>
+      <p class="font-body text-xs text-charcoal/50 mt-1">pessoas confirmadas</p>
+    </div>
+
+    <!-- Recusados -->
+    <div class="admin-card bg-white border border-charcoal/8 border-l-4 border-l-red-500 p-6 rounded-sm shadow-xs">
+      <p class="font-body text-xs text-red-500 tracking-widest uppercase font-medium">Não Comparecerão</p>
+      <p class="font-display text-3xl text-red-500 font-light mt-2">{{ stats.total_declined_invitations }}</p>
+      <p class="font-body text-xs text-charcoal/50 mt-1">convites recusados ({{ stats.total_declined_guests }} vagas)</p>
+    </div>
+
+    <!-- Pendentes -->
+    <div class="admin-card bg-white border border-charcoal/8 border-l-4 border-l-amber-500 p-6 rounded-sm shadow-xs">
+      <p class="font-body text-xs text-amber-500 tracking-widest uppercase font-medium">Aguardando Resposta</p>
+      <p class="font-display text-3xl text-amber-500 font-light mt-2">{{ stats.pending_invitations }}</p>
+      <p class="font-body text-xs text-charcoal/50 mt-1">convites pendentes ({{ stats.pending_guests }} vagas)</p>
+    </div>
+  </div>
+
+  <!-- ── CADASTRO & BUSCA ── -->
+  <div class="grid md:grid-cols-3 gap-8 mb-10">
+    
+    <!-- Formulário de Cadastro -->
+    <div class="bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs h-fit md:col-span-1">
+      <h3 class="font-display text-lg text-charcoal mb-4 border-b border-charcoal/10 pb-2">Cadastrar Novo Convite</h3>
+      
+      <form action="/admin/convite" method="POST" class="space-y-4">
+        <div>
+          <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Nome no Convite</label>
+          <input type="text"
+                 name="name"
+                 required
+                 placeholder="Ex: Cláudio e família"
+                 class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+        </div>
+
+        <div>
+          <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Limite de Convidados (Total)</label>
+          <input type="number"
+                 name="max_guests"
+                 min="1"
+                 max="20"
+                 required
+                 value="1"
+                 class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase py-3 transition-all duration-300">
+          Adicionar Convite
+        </button>
+      </form>
+    </div>
+
+    <!-- Lista de Convites e Busca -->
+    <div class="bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs md:col-span-2">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-charcoal/10">
+        <h3 class="font-display text-lg text-charcoal">Lista de Convidados</h3>
+        
+        <!-- Formulário de busca rápida -->
+        <form method="GET" action="/admin" class="flex gap-1 w-full sm:w-auto">
+          <input type="text"
+                 name="q"
+                 value="{{ search_query }}"
+                 placeholder="Filtrar por nome..."
+                 class="bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-1.5 text-xs outline-none rounded-sm w-full sm:w-48">
+          {% if search_query %}
+            <a href="/admin" class="border border-charcoal/20 hover:bg-charcoal/5 px-2 py-1.5 text-xs font-body rounded-sm flex items-center justify-center">×</a>
+          {% endif %}
+          <button type="submit"
+                  class="bg-charcoal text-cream hover:bg-sage font-body text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-sm transition-colors">
+            Filtrar
+          </button>
+        </form>
+      </div>
+
+      <!-- Tabela de Convites -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-body text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-charcoal/10 text-xs uppercase tracking-wider text-muted font-normal">
+              <th class="py-3 px-2">Convite</th>
+              <th class="py-3 px-2 text-center">Limite</th>
+              <th class="py-3 px-2">Resposta / Confirmados</th>
+              <th class="py-3 px-2 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-charcoal/5 text-charcoal/80">
+            {% if not groups %}
+              <tr>
+                <td colspan="4" class="py-8 text-center text-charcoal/40 italic">Nenhum convite encontrado.</td>
+              </tr>
+            {% endif %}
+            
+            {% for group in groups %}
+              <tr class="hover:bg-cream/10 transition-colors">
+                <!-- Nome -->
+                <td class="py-3 px-2">
+                  <div class="font-medium text-charcoal">{{ group.name }}</div>
+                  {% if group.declined_reason %}
+                    <div class="text-xs text-red-500 italic mt-0.5 max-w-[200px] truncate" title="{{ group.declined_reason }}">
+                      Mensagem: "{{ group.declined_reason }}"
+                    </div>
+                  {% endif %}
+                </td>
+                
+                <!-- Limite -->
+                <td class="py-3 px-2 text-center font-display text-base">{{ group.max_guests }}</td>
+                
+                <!-- Status/Confirmados -->
+                <td class="py-3 px-2">
+                  {% if group.status == 'confirmed' %}
+                    <span class="inline-block text-[10px] uppercase tracking-widest bg-sage/20 text-sage font-medium px-2 py-0.5 rounded-sm">Confirmado ({{ group.confirmed_count }})</span>
+                    <div class="text-xs text-muted mt-1 leading-tight">
+                      {{ group.confirmed_names | join(", ") }}
+                    </div>
+                  {% elif group.status == 'declined' %}
+                    <span class="inline-block text-[10px] uppercase tracking-widest bg-red-100 text-red-700 font-medium px-2 py-0.5 rounded-sm">Não Comparecerá</span>
+                  {% else %}
+                    <span class="inline-block text-[10px] uppercase tracking-widest bg-charcoal/10 text-charcoal/60 px-2 py-0.5 rounded-sm">Pendente</span>
+                  {% endif %}
+                </td>
+                
+                <!-- Ações -->
+                <td class="py-3 px-2 text-right space-x-1.5 whitespace-nowrap">
+                  <!-- Editar -->
+                  <button hx-get="/admin/convite/{{ group.id }}/editar"
+                          hx-target="#modal-content"
+                          hx-swap="innerHTML"
+                          class="text-xs border border-charcoal/10 hover:border-charcoal hover:bg-cream/40 px-2.5 py-1 text-charcoal/70 transition-all rounded-sm">
+                    Editar
+                  </button>
+                  
+                  <!-- Resetar (se não pendente) -->
+                  {% if group.status != 'pending' %}
+                    <button hx-post="/admin/convite/{{ group.id }}/resetar"
+                            hx-confirm="Deseja limpar as respostas de '{{ group.name }}'?"
+                            class="text-xs border border-amber-300 hover:bg-amber-50 px-2.5 py-1 text-amber-700 transition-all rounded-sm">
+                      Resetar
+                    </button>
+                  {% endif %}
+
+                  <!-- Deletar -->
+                  <button hx-post="/admin/convite/{{ group.id }}/deletar"
+                          hx-confirm="Tem certeza de que deseja excluir o convite '{{ group.name }}'?"
+                          class="text-xs border border-red-200 hover:bg-red-50 px-2.5 py-1 text-red-600 transition-all rounded-sm">
+                    Excluir
+                  </button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
