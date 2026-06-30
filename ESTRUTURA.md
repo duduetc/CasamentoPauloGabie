@@ -46,10 +46,10 @@ CasamentoPauloGabie/
 │   │   ├── js/
 │   │   │   └── ui.js           ← Scripts de interatividade do front-end
 │   │   └── images/
-│   │       ├── hero.jpg        ← Imagem principal do casal (banner)
-│   │       ├── couple1.jpg     ← Foto do casal 1
-│   │       ├── couple2.jpg     ← Foto do casal 2
-│   │       ├── couple3.jpg     ← Foto do casal 3
+│   │       ├── MELQ5754.jpg    ← Imagem principal do casal (banner)
+│   │       ├── MELQ4642.jpg    ← Foto do casal 1
+│   │       ├── MELQ5044.jpg    ← Foto do casal 2
+│   │       ├── MELQ5989.jpg    ← Foto do casal 3
 │   │       ├── pix_qr.png      ← QR Code PIX para contribuições
 │   │       └── gifts/          ← Imagens individuais de cada presente da lista
 │   │
