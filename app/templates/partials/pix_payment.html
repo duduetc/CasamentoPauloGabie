@@ -18,7 +18,7 @@
   <div class="p-8 text-center">
 
     <p class="font-body text-sm text-charcoal/60 mb-6">
-      Escaneie o QR Code abaixo com o app do seu banco para realizar o pagamento via PIX.
+      Escaneie o QR Code abaixo com o aplicativo do seu banco para realizar o pagamento via PIX.
     </p>
 
     <!-- QR Code image -->
@@ -40,31 +40,15 @@
       </div>
     </div>
 
-    <p class="font-body text-xs text-muted mb-3 tracking-widest uppercase">Ou copie o código PIX</p>
-
-    <!-- Copy paste area -->
-    <div class="bg-cream border border-charcoal/10 rounded-sm px-4 py-3 mb-4 text-left">
-      <p id="pix-code-text"
-         class="font-body text-xs text-charcoal/50 break-all leading-relaxed select-all">
-        {{ pix_code }}
-      </p>
-    </div>
-
-    <button id="copy-btn"
-            onclick="copyPix('{{ pix_code }}')"
-            class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300 mb-3">
-      Copiar código PIX
-    </button>
-
     <button onclick="closeModal({target: document.getElementById('modal-backdrop')})"
-            class="w-full font-body text-xs tracking-widest uppercase py-3 text-muted hover:text-charcoal transition-colors duration-200">
+            class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300 mb-3">
       Fechar
     </button>
 
     <!-- Love note -->
     <div class="mt-8 pt-6 border-t border-charcoal/8">
       <p class="font-script text-sage text-xl">Obrigado pelo carinho! 🌿</p>
-      <p class="font-body text-xs text-muted mt-1">Paulo & Gabie</p>
+      <p class="font-body text-xs text-muted mt-1">Gabriela & Paulo Isaque</p>
     </div>
   </div>
 </div>
