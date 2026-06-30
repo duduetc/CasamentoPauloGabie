@@ -17,44 +17,49 @@
   <!-- Body -->
   <div class="p-8 text-center">
 
-    <p class="font-body text-sm text-charcoal/60 mb-6">
-      Escaneie o QR Code abaixo com o app do seu banco para realizar o pagamento via PIX.
-    </p>
-
-    <!-- QR Code image -->
-    <div class="inline-block border border-charcoal/10 p-4 mb-6 rounded-sm shadow-sm">
-      <img src="{{ pix_qr }}"
-           alt="QR Code PIX"
-           class="w-52 h-52 object-contain mx-auto"
-           onerror="this.style.display='none'; document.getElementById('qr-placeholder').style.display='flex'">
-      <!-- Placeholder if image missing -->
-      <div id="qr-placeholder"
-           style="display:none"
-           class="w-52 h-52 bg-cream items-center justify-center flex-col gap-2 text-center">
-        <div class="grid grid-cols-3 gap-1 w-24 h-24 opacity-30">
-          {% for _ in range(9) %}
-          <div class="bg-charcoal rounded-sm"></div>
-          {% endfor %}
-        </div>
-        <p class="font-body text-xs text-muted">QR Code PIX</p>
-      </div>
-    </div>
-
-    <p class="font-body text-xs text-muted mb-3 tracking-widest uppercase">Ou copie o código PIX</p>
-
-    <!-- Copy paste area -->
-    <div class="bg-cream border border-charcoal/10 rounded-sm px-4 py-3 mb-4 text-left">
-      <p id="pix-code-text"
-         class="font-body text-xs text-charcoal/50 break-all leading-relaxed select-all">
-        {{ pix_code }}
+    <div class="mb-6">
+      <p class="font-body text-sm text-charcoal/60">
+        Você pode realizar a sua contribuição copiando a chave PIX (CPF) ou por transferência bancária.
       </p>
     </div>
 
-    <button id="copy-btn"
-            onclick="copyPix('{{ pix_code }}')"
-            class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300 mb-3">
-      Copiar código PIX
-    </button>
+    <!-- PIX Info Section -->
+    <div class="border border-charcoal/10 rounded-sm p-5 mb-6 text-center">
+      <p class="font-body text-xs text-muted mb-2 tracking-widest uppercase">Opção 1: Chave PIX (CPF)</p>
+      
+      <!-- Chave PIX text -->
+      <div class="bg-cream border border-charcoal/10 rounded-sm px-4 py-3 mb-3 text-center">
+        <p id="pix-code-text" class="font-display text-lg text-charcoal tracking-wide font-medium select-all">
+          {{ pix_code }}
+        </p>
+      </div>
+
+      <button id="copy-btn"
+              onclick="copyPix('{{ pix_code }}')"
+              class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300">
+        Copiar código PIX
+      </button>
+    </div>
+
+    <!-- Transferência Bancária Section -->
+    <div class="border border-charcoal/10 rounded-sm p-5 mb-6 text-left">
+      <p class="font-body text-xs text-muted mb-3 tracking-widest uppercase text-center">Opção 2: Transferência Bancária</p>
+      
+      <div class="space-y-2 font-body text-sm text-charcoal/80">
+        <div class="flex justify-between border-b border-charcoal/5 pb-1">
+          <span class="text-muted">Banco</span>
+          <span class="font-medium text-charcoal">077 - Inter</span>
+        </div>
+        <div class="flex justify-between border-b border-charcoal/5 pb-1">
+          <span class="text-muted">Agência</span>
+          <span class="font-medium text-charcoal">0001</span>
+        </div>
+        <div class="flex justify-between pb-1">
+          <span class="text-muted">Conta Corrente</span>
+          <span class="font-medium text-charcoal">6908981-7</span>
+        </div>
+      </div>
+    </div>
 
     <button onclick="closeModal({target: document.getElementById('modal-backdrop')})"
             class="w-full font-body text-xs tracking-widest uppercase py-3 text-muted hover:text-charcoal transition-colors duration-200">
