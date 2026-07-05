@@ -1,53 +1,67 @@
-import sqlite3
-import json
 import os
+import json
 import unicodedata
 from datetime import datetime
 from contextlib import contextmanager
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "wedding.db")
+import psycopg2
+import psycopg2.extras
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+
 
 @contextmanager
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         yield conn
     finally:
         conn.close()
 
+
 def normalize_name(s: str) -> str:
-    """Normaliza um nome removendo acentos e convertendo para minúsculas para busca flexível."""
     if not s:
         return ""
-    # Remove acentos
     s = "".join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
+        c for c in unicodedata.normalize("NFD", s)
+        if unicodedata.category(c) != "Mn"
     )
     return s.lower().strip()
 
+
 def init_db():
-    """Cria a tabela do banco de dados e adiciona dados iniciais se estiver vazia."""
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS rsvp_groups (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 name TEXT NOT NULL UNIQUE,
                 max_guests INTEGER NOT NULL DEFAULT 1,
-                status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'confirmed', 'declined'
+                status TEXT NOT NULL DEFAULT 'pending',
                 confirmed_count INTEGER DEFAULT 0,
-                confirmed_names TEXT, -- JSON string de lista de nomes
+                confirmed_names TEXT,
                 declined_reason TEXT,
                 updated_at TEXT
             )
         """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS contributions (
+                id SERIAL PRIMARY KEY,
+                gift_id INTEGER NOT NULL,
+                gift_name TEXT NOT NULL,
+                contributor_name TEXT NOT NULL,
+                amount NUMERIC(10,2) NOT NULL,
+                message TEXT,
+                confirmed_at TEXT NOT NULL
+            )
+        """)
         conn.commit()
 
-        # Verifica se já existem dados
         cursor.execute("SELECT COUNT(*) FROM rsvp_groups")
-        if cursor.fetchone()[0] == 0:
+        if cursor.fetchone()["count"] == 0:
             seed_data = [
                 ("Cláudio e família", 4),
                 ("Maria Silva", 1),
@@ -58,113 +72,124 @@ def init_db():
                 ("Mariana e Ricardo", 2),
             ]
             cursor.executemany(
-                "INSERT INTO rsvp_groups (name, max_guests) VALUES (?, ?)",
-                seed_data
+                "INSERT INTO rsvp_groups (name, max_guests) VALUES (%s, %s)",
+                seed_data,
             )
             conn.commit()
 
+
+# ── Contributions ─────────────────────────────────────────────────────────────
+
+def add_contribution(gift_id: int, gift_name: str, contributor_name: str, amount: float, message: str = "") -> int:
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO contributions (gift_id, gift_name, contributor_name, amount, message, confirmed_at)
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
+            """,
+            (gift_id, gift_name, contributor_name, amount, message or None, datetime.now().isoformat()),
+        )
+        row_id = cursor.fetchone()["id"]
+        conn.commit()
+        return row_id
+
+
+def get_all_contributions_totals() -> dict:
+    """Retorna {gift_id: total_contribuido} para todos os presentes."""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT gift_id, COALESCE(SUM(amount), 0) AS total FROM contributions GROUP BY gift_id")
+        return {row["gift_id"]: float(row["total"]) for row in cursor.fetchall()}
+
+
+# ── RSVP groups ───────────────────────────────────────────────────────────────
+
+def _parse_group(row: dict) -> dict:
+    group = dict(row)
+    group["confirmed_names"] = json.loads(group["confirmed_names"]) if group["confirmed_names"] else []
+    return group
+
+
 def search_groups(query: str):
-    """Busca convites cujo nome seja similar à busca utilizando normalização em Python."""
     normalized_query = normalize_name(query)
     if not normalized_query:
         return []
-
-    results = []
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM rsvp_groups")
         rows = cursor.fetchall()
-        for row in rows:
-            normalized_db_name = normalize_name(row["name"])
-            if normalized_query in normalized_db_name:
-                group = dict(row)
-                if group["confirmed_names"]:
-                    group["confirmed_names"] = json.loads(group["confirmed_names"])
-                else:
-                    group["confirmed_names"] = []
-                results.append(group)
-    return results
+    return [
+        _parse_group(row) for row in rows
+        if normalized_query in normalize_name(row["name"])
+    ]
+
 
 def get_group_by_id(group_id: int):
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM rsvp_groups WHERE id = ?", (group_id,))
+        cursor.execute("SELECT * FROM rsvp_groups WHERE id = %s", (group_id,))
         row = cursor.fetchone()
-        if row:
-            group = dict(row)
-            if group["confirmed_names"]:
-                group["confirmed_names"] = json.loads(group["confirmed_names"])
-            else:
-                group["confirmed_names"] = []
-            return group
-        return None
+    return _parse_group(row) if row else None
+
 
 def update_group_rsvp(group_id: int, status: str, confirmed_count: int, confirmed_names: list, declined_reason: str = None):
     with get_db() as conn:
         cursor = conn.cursor()
-        updated_at = datetime.now().isoformat()
-        names_json = json.dumps(confirmed_names, ensure_ascii=False)
         cursor.execute(
             """
             UPDATE rsvp_groups
-            SET status = ?, confirmed_count = ?, confirmed_names = ?, declined_reason = ?, updated_at = ?
-            WHERE id = ?
+            SET status = %s, confirmed_count = %s, confirmed_names = %s,
+                declined_reason = %s, updated_at = %s
+            WHERE id = %s
             """,
-            (status, confirmed_count, names_json, declined_reason, updated_at, group_id)
+            (status, confirmed_count, json.dumps(confirmed_names, ensure_ascii=False),
+             declined_reason, datetime.now().isoformat(), group_id),
         )
         conn.commit()
         return cursor.rowcount > 0
 
+
 def get_all_groups(search_query: str = None):
     with get_db() as conn:
         cursor = conn.cursor()
-        if search_query:
-            # Carrega todos e filtra por normalização para a lista do admin também ser robusta
-            normalized_query = normalize_name(search_query)
-            cursor.execute("SELECT * FROM rsvp_groups ORDER BY name")
-            rows = cursor.fetchall()
-            results = []
-            for row in rows:
-                if normalized_query in normalize_name(row["name"]):
-                    group = dict(row)
-                    group["confirmed_names"] = json.loads(group["confirmed_names"]) if group["confirmed_names"] else []
-                    results.append(group)
-            return results
-        else:
-            cursor.execute("SELECT * FROM rsvp_groups ORDER BY name")
-            rows = cursor.fetchall()
-            results = []
-            for row in rows:
-                group = dict(row)
-                group["confirmed_names"] = json.loads(group["confirmed_names"]) if group["confirmed_names"] else []
-                results.append(group)
-            return results
+        cursor.execute("SELECT * FROM rsvp_groups ORDER BY name")
+        rows = cursor.fetchall()
+    if search_query:
+        normalized = normalize_name(search_query)
+        rows = [r for r in rows if normalized in normalize_name(r["name"])]
+    return [_parse_group(r) for r in rows]
+
 
 def add_group(name: str, max_guests: int):
     with get_db() as conn:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "INSERT INTO rsvp_groups (name, max_guests) VALUES (?, ?)",
-                (name.strip(), max_guests)
+                "INSERT INTO rsvp_groups (name, max_guests) VALUES (%s, %s)",
+                (name.strip(), max_guests),
             )
             conn.commit()
             return True, cursor.lastrowid
-        except sqlite3.IntegrityError:
+        except psycopg2.errors.UniqueViolation:
+            conn.rollback()
             return False, "Este nome de convite já existe."
+
 
 def update_group(group_id: int, name: str, max_guests: int):
     with get_db() as conn:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE rsvp_groups SET name = ?, max_guests = ? WHERE id = ?",
-                (name.strip(), max_guests, group_id)
+                "UPDATE rsvp_groups SET name = %s, max_guests = %s WHERE id = %s",
+                (name.strip(), max_guests, group_id),
             )
             conn.commit()
             return True, "Convite atualizado com sucesso."
-        except sqlite3.IntegrityError:
+        except psycopg2.errors.UniqueViolation:
+            conn.rollback()
             return False, "Este nome de convite já está em uso."
+
 
 def reset_group_rsvp(group_id: int):
     with get_db() as conn:
@@ -172,58 +197,55 @@ def reset_group_rsvp(group_id: int):
         cursor.execute(
             """
             UPDATE rsvp_groups
-            SET status = 'pending', confirmed_count = 0, confirmed_names = NULL, declined_reason = NULL, updated_at = NULL
-            WHERE id = ?
+            SET status = 'pending', confirmed_count = 0, confirmed_names = NULL,
+                declined_reason = NULL, updated_at = NULL
+            WHERE id = %s
             """,
-            (group_id,)
+            (group_id,),
         )
         conn.commit()
         return cursor.rowcount > 0
 
+
 def delete_group(group_id: int):
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM rsvp_groups WHERE id = ?", (group_id,))
+        cursor.execute("DELETE FROM rsvp_groups WHERE id = %s", (group_id,))
         conn.commit()
         return cursor.rowcount > 0
+
 
 def get_stats():
     with get_db() as conn:
         cursor = conn.cursor()
-        
-        # Total de convites cadastrados
+
         cursor.execute("SELECT COUNT(*) FROM rsvp_groups")
-        total_invitations = cursor.fetchone()[0]
-        
-        # Total de convidados possíveis (capacidade máxima de todos os convites)
-        cursor.execute("SELECT SUM(max_guests) FROM rsvp_groups")
-        total_max_guests = cursor.fetchone()[0] or 0
-        
-        # Confirmados
-        cursor.execute("SELECT SUM(confirmed_count) FROM rsvp_groups WHERE status = 'confirmed'")
-        total_confirmed = cursor.fetchone()[0] or 0
-        
-        # Recusados (quantidade de convites que recusaram)
+        total_invitations = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COALESCE(SUM(max_guests), 0) FROM rsvp_groups")
+        total_max_guests = cursor.fetchone()["coalesce"]
+
+        cursor.execute("SELECT COALESCE(SUM(confirmed_count), 0) FROM rsvp_groups WHERE status = 'confirmed'")
+        total_confirmed = cursor.fetchone()["coalesce"]
+
         cursor.execute("SELECT COUNT(*) FROM rsvp_groups WHERE status = 'declined'")
-        total_declined_invitations = cursor.fetchone()[0]
-        
-        # Total de pessoas em convites recusados
-        cursor.execute("SELECT SUM(max_guests) FROM rsvp_groups WHERE status = 'declined'")
-        total_declined_guests = cursor.fetchone()[0] or 0
+        total_declined_invitations = cursor.fetchone()["count"]
 
-        # Pendentes (convites sem resposta)
+        cursor.execute("SELECT COALESCE(SUM(max_guests), 0) FROM rsvp_groups WHERE status = 'declined'")
+        total_declined_guests = cursor.fetchone()["coalesce"]
+
         cursor.execute("SELECT COUNT(*) FROM rsvp_groups WHERE status = 'pending'")
-        pending_invitations = cursor.fetchone()[0]
-        
-        cursor.execute("SELECT SUM(max_guests) FROM rsvp_groups WHERE status = 'pending'")
-        pending_guests = cursor.fetchone()[0] or 0
+        pending_invitations = cursor.fetchone()["count"]
 
-        return {
-            "total_invitations": total_invitations,
-            "total_max_guests": total_max_guests,
-            "total_confirmed": total_confirmed,
-            "total_declined_invitations": total_declined_invitations,
-            "total_declined_guests": total_declined_guests,
-            "pending_invitations": pending_invitations,
-            "pending_guests": pending_guests
-        }
+        cursor.execute("SELECT COALESCE(SUM(max_guests), 0) FROM rsvp_groups WHERE status = 'pending'")
+        pending_guests = cursor.fetchone()["coalesce"]
+
+    return {
+        "total_invitations": total_invitations,
+        "total_max_guests": total_max_guests,
+        "total_confirmed": total_confirmed,
+        "total_declined_invitations": total_declined_invitations,
+        "total_declined_guests": total_declined_guests,
+        "pending_invitations": pending_invitations,
+        "pending_guests": pending_guests,
+    }
