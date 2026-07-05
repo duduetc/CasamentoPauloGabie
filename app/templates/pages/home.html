@@ -90,23 +90,6 @@
   </div>
 </section>
 
-<!-- ────────────────────────────────────────────────────────────
-     DECORATIVE MARQUEE
-──────────────────────────────────────────────────────────── -->
-<div class="overflow-hidden py-6 border-y border-charcoal/10 bg-cream">
-  <div class="divider-script animate-[marquee_18s_linear_infinite]">
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
-    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026
-  </div>
-</div>
-<style>
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-</style>
 
 <!-- ────────────────────────────────────────────────────────────
      NOSSA HISTÓRIA
@@ -168,73 +151,175 @@
 </section>
 
 <!-- ────────────────────────────────────────────────────────────
-     TIMELINE
+     TIMELINE + GALERIA
 ──────────────────────────────────────────────────────────── -->
 <section class="bg-charcoal py-24">
-  <div class="max-w-3xl mx-auto px-6">
+  <div class="max-w-6xl mx-auto px-6">
     <p class="font-body text-xs tracking-[.3em] uppercase text-cream/40 text-center mb-2">Momentos</p>
     <h2 class="font-display text-4xl text-cream font-light text-center mb-16">Nossa linha do tempo</h2>
 
-    <div class="relative">
-      <div class="timeline-line"></div>
+    <div class="grid md:grid-cols-2 gap-12 items-start">
 
-      {% set events = [
-        ("2020", "Como tudo começou", "Nos conhecemos no meio da pandemia por causa de um amigo em comum."),
-        ("2021", "Início do Namoro", "Decidimos dar um passo além da amizade e iniciar uma jornada de amor, carinho e dedicação."),
-        ("2025", "O Pedido de Casamento", "Aconteceu em 04 de setembro de 2025 no Espaço da Lenda, o lugar dos nossos sonhos."),
-        ("2026", "Casamento", "07 de setembro de 2026 — o nascimento da nossa família guiada por Cristo."),
-      ] %}
-
-      {% for year, title, desc in events %}
-      <div class="flex items-center gap-8 mb-14 {% if loop.index is even %}flex-row-reverse{% endif %}">
-        <div class="w-1/2 {% if loop.index is even %}text-left{% else %}text-right{% endif %} pr-8 pl-8">
-          <p class="font-script text-sage text-2xl mb-1">{{ year }}</p>
-          <h3 class="font-display text-cream text-xl font-light">{{ title }}</h3>
-          <p class="font-body text-cream/50 text-sm mt-1">{{ desc }}</p>
+      <!-- ── Coluna esquerda: timeline ── -->
+      <div class="pl-6 border-l border-sage/30">
+        {% set events = [
+          ("2020", "Como tudo começou", "Nos conhecemos no meio da pandemia por causa de um amigo em comum."),
+          ("2021", "Início do Namoro", "Decidimos dar um passo além da amizade e iniciar uma jornada de amor, carinho e dedicação."),
+          ("2025", "O Pedido de Casamento", "Aconteceu em 04 de setembro de 2025 no Espaço da Lenda, o lugar dos nossos sonhos."),
+          ("2026", "Casamento", "07 de setembro de 2026 — o nascimento da nossa família guiada por Cristo."),
+        ] %}
+        {% for year, title, desc in events %}
+        <div class="relative flex items-start gap-4 py-4 {% if not loop.last %}border-b border-cream/5{% endif %}">
+          <div class="absolute -left-[1.6rem] top-[1.3rem] w-2.5 h-2.5 rounded-full bg-sage border-2 border-charcoal flex-shrink-0"></div>
+          <p class="font-script text-sage flex-shrink-0" style="font-size:1.4rem; line-height:1.1; min-width:52px;">{{ year }}</p>
+          <div>
+            <h3 class="font-display text-cream font-light tracking-wide" style="font-size:1rem; line-height:1.2;">{{ title }}</h3>
+            <p class="font-body text-cream/55 leading-relaxed mt-1" style="font-size:.85rem;">{{ desc }}</p>
+          </div>
         </div>
-        <div class="relative z-10 w-3 h-3 rounded-full bg-sage border-2 border-charcoal flex-shrink-0"></div>
-        <div class="w-1/2"></div>
+        {% endfor %}
       </div>
-      {% endfor %}
+
+      <!-- ── Coluna direita: galeria slider ── -->
+      <div class="relative overflow-hidden" id="gallery-track-wrapper">
+        <div id="gallery-track"
+             class="flex gap-3 transition-transform duration-500 ease-in-out"
+             style="will-change: transform;">
+          {% for img in ['MELQ4642.jpg','MELQ5044.jpg','MELQ5754.jpg','MELQ5989.jpg'] %}
+          <div class="flex-shrink-0 w-full">
+            <img src="/static/images/{{ img }}"
+                 alt="Foto do casal"
+                 class="w-full object-cover rounded-sm"
+                 style="height:360px; object-position:center;">
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Controles -->
+        <button id="gallery-prev"
+                aria-label="Foto anterior"
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-charcoal/70 border border-cream/20 flex items-center justify-center text-cream hover:bg-sage transition-all duration-200 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+          </svg>
+        </button>
+        <button id="gallery-next"
+                aria-label="Próxima foto"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-charcoal/70 border border-cream/20 flex items-center justify-center text-cream hover:bg-sage transition-all duration-200 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+          </svg>
+        </button>
+
+        <!-- Dots -->
+        <div class="flex justify-center gap-2 mt-4" id="gallery-dots">
+          {% for i in range(4) %}
+          <button aria-label="Foto {{ i+1 }}"
+                  class="gallery-dot w-1.5 h-1.5 rounded-full transition-all duration-300 {% if i == 0 %}bg-sage w-4{% else %}bg-cream/30{% endif %}"
+                  data-index="{{ i }}"></button>
+          {% endfor %}
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
+<script>
+(function() {
+  const track = document.getElementById('gallery-track');
+  const dots  = document.querySelectorAll('.gallery-dot');
+  const total = 4;
+  let cur = 0;
+
+  function goTo(n) {
+    cur = (n + total) % total;
+    track.style.transform = `translateX(calc(-${cur} * (100% + 0.75rem)))`;
+    dots.forEach((d, i) => {
+      d.classList.toggle('bg-sage', i === cur);
+      d.classList.toggle('w-4',    i === cur);
+      d.classList.toggle('bg-cream/30', i !== cur);
+      d.classList.toggle('w-1.5',  i !== cur);
+    });
+  }
+
+  document.getElementById('gallery-prev').addEventListener('click', () => goTo(cur - 1));
+  document.getElementById('gallery-next').addEventListener('click', () => goTo(cur + 1));
+  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.index)));
+
+  // auto-play a cada 4s
+  setInterval(() => goTo(cur + 1), 4000);
+})();
+</script>
+
 <!-- ────────────────────────────────────────────────────────────
      INFORMAÇÕES DO EVENTO
 ──────────────────────────────────────────────────────────── -->
-<section class="max-w-6xl mx-auto px-6 py-24">
-  <p class="font-body text-xs tracking-[.3em] uppercase text-muted text-center mb-2">Detalhes</p>
-  <h2 class="font-display text-4xl font-light text-center mb-16">O grande dia</h2>
+<section class="bg-cream py-16">
+  <div class="max-w-4xl mx-auto px-6">
 
-  <div class="grid md:grid-cols-3 gap-px bg-charcoal/10">
-    {% set details = [
-      ("📍", "Local", 'Espaço da Lenda<br><a href="https://maps.app.goo.gl/xgL2ELWQPYKeh8Dc9?g_st=iw" target="_blank" class="text-xs text-sage hover:underline block mt-1">Ver localização ↗</a>'),
-      ("🕔", "Horário", "Cerimônia às 15h30"),
-      ("👗", "Traje", "Passeio Completo"),
-    ] %}
-    {% for icon, label, text in details %}
-    <div class="bg-cream p-10 text-center flex flex-col items-center gap-3">
-      <span class="text-3xl">{{ icon }}</span>
-      <p class="font-body text-xs tracking-[.3em] uppercase text-muted">{{ label }}</p>
-      <p class="font-display text-xl font-light leading-snug whitespace-pre-line">{{ text | safe }}</p>
+    <!-- header em linha -->
+    <div class="flex items-baseline gap-4 mb-6 border-b border-charcoal/10 pb-5">
+      <p class="font-body text-xs tracking-[.3em] uppercase text-muted flex-shrink-0">O grande dia</p>
+      <div class="flex-1 h-px bg-charcoal/8"></div>
+      <p class="font-display text-charcoal font-light italic" style="font-size:1.05rem;">07 de Setembro de 2026</p>
     </div>
-    {% endfor %}
-  </div>
 
-  <!-- Dicas para o conforto -->
-  <div class="mt-16 max-w-2xl mx-auto bg-sage/10 border border-sage/20 p-8 rounded-sm">
-    <h3 class="font-display text-2xl font-light text-charcoal text-center mb-6">Dicas para o seu conforto</h3>
-    <ul class="space-y-4 font-body text-base text-charcoal/80 leading-relaxed">
-      <li class="flex items-start gap-3">
-        <span class="text-sage text-lg select-none">🌿</span>
-        <span>Recomendamos que não seja utilizado salto alto fino, pois a cerimônia será realizada no gramado.</span>
-      </li>
-      <li class="flex items-start gap-3">
-        <span class="text-sage text-lg select-none">☀️</span>
-        <span>Aconselhamos que usem protetor solar e repelente devido à exposição ao sol e à área verde do local.</span>
-      </li>
-    </ul>
+    <!-- 3 colunas desktop -->
+    <div class="hidden md:grid md:grid-cols-3 md:divide-x md:divide-charcoal/10 mb-6">
+      <div class="pr-6">
+        <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-1">Local</p>
+        <p class="font-display text-charcoal font-light" style="font-size:1.25rem; line-height:1.2;">Espaço da Lenda</p>
+        <a href="https://maps.app.goo.gl/xgL2ELWQPYKeh8Dc9?g_st=iw" target="_blank"
+           class="font-body text-xs text-sage hover:underline tracking-wide cursor-pointer">Ver localização ↗</a>
+      </div>
+      <div class="px-6">
+        <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-1">Cerimônia</p>
+        <p class="font-display text-charcoal font-light" style="font-size:1.25rem;">15h30</p>
+      </div>
+      <div class="pl-6">
+        <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-1">Traje</p>
+        <p class="font-display text-charcoal font-light" style="font-size:1.25rem;">Passeio Completo</p>
+      </div>
+    </div>
+
+    <!-- mobile layout -->
+    <div class="md:hidden mb-6">
+      <div class="py-3 border-b border-charcoal/10">
+        <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-1">Local</p>
+        <p class="font-display text-charcoal font-light" style="font-size:1.2rem; line-height:1.2;">Espaço da Lenda</p>
+        <a href="https://maps.app.goo.gl/xgL2ELWQPYKeh8Dc9?g_st=iw" target="_blank"
+           class="font-body text-xs text-sage hover:underline tracking-wide cursor-pointer">Ver localização ↗</a>
+      </div>
+      <div class="grid grid-cols-2 divide-x divide-charcoal/10 border-b border-charcoal/10">
+        <div class="py-3 pr-4">
+          <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-1">Cerimônia</p>
+          <p class="font-display text-charcoal font-light" style="font-size:1.1rem;">15h30</p>
+        </div>
+        <div class="py-3 pl-4">
+          <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-1">Traje</p>
+          <p class="font-display text-charcoal font-light" style="font-size:1.1rem; line-height:1.2;">Passeio Completo</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dicas compactas -->
+    <div class="border-t border-charcoal/10 pt-5 space-y-2">
+      <p class="font-body text-xs tracking-[.25em] uppercase text-muted mb-3">Atenção</p>
+      <div class="flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="#7A9E7E" class="w-3.5 h-3.5 flex-shrink-0 mt-0.5">
+          <circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 8v4m0 4h.01"/>
+        </svg>
+        <p class="font-body text-charcoal/65 leading-relaxed" style="font-size:.85rem;">Recomendamos evitar salto alto fino — a cerimônia será realizada no gramado.</p>
+      </div>
+      <div class="flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="#7A9E7E" class="w-3.5 h-3.5 flex-shrink-0 mt-0.5">
+          <circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 8v4m0 4h.01"/>
+        </svg>
+        <p class="font-body text-charcoal/65 leading-relaxed" style="font-size:.85rem;">Use protetor solar e repelente — área externa com exposição ao sol e área verde.</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
