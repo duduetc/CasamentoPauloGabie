@@ -58,19 +58,26 @@ async def admin_import(request: Request, file: UploadFile = File(...)):
             content = await file.read()
             wb = openpyxl.load_workbook(io.BytesIO(content))
             ws = wb.active
-            headers = [str(c.value).lower().strip() if c.value else "" for c in next(ws.iter_rows(min_row=1, max_row=1))]
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                def col(keys):
-                    for k in keys:
-                        if k in headers:
-                            v = row[headers.index(k)]
-                            return str(v).strip() if v is not None else ""
-                    return ""
-                name = col(["nome", "name"])
-                max_guests_raw = col(["convidados", "max_guests", "vagas"]) or "1"
-                phone = col(["telefone", "phone"])
-                if name:
-                    rows.append({"name": name, "max_guests": int(max_guests_raw or 1), "phone": phone})
+
+            # Detecta formato "Lista - SITE":
+            # col A = Quant., col B = Nome Subscrito no convite, col D = Celular
+            # Linha 2 tem os cabeçalhos; dados começam na linha 4
+            # Só importa linhas onde col A é número e col B é texto (convite principal)
+            for row in ws.iter_rows(min_row=4, values_only=True):
+                quant = row[0] if len(row) > 0 else None
+                nome  = row[1] if len(row) > 1 else None
+                phone_val = row[3] if len(row) > 3 else None
+
+                # ignora linhas de categoria, sub-convidados e vazias
+                if not isinstance(quant, (int, float)) or not nome:
+                    continue
+
+                name_str  = str(nome).strip()
+                phone_str = str(phone_val).strip() if phone_val else ""
+                max_g     = int(quant)
+
+                if name_str:
+                    rows.append({"name": name_str, "max_guests": max_g, "phone": phone_str})
         else:
             error = "Formato não suportado. Envie um arquivo .csv ou .xlsx."
 
