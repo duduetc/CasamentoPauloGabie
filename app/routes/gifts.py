@@ -102,3 +102,24 @@ async def contribute(request: Request, gift_id: int, amount: float = Form(...)):
             "pix_code": PIX_COPY_PASTE,
         },
     )
+
+
+@router.post("/presentes/{gift_id}/confirmar", response_class=HTMLResponse)
+async def confirm_contribution(
+    request: Request,
+    gift_id: int,
+    name: str = Form(...),
+    amount: float = Form(...),
+    message: str = Form(""),
+    gift_name: str = Form(""),
+):
+    return templates.TemplateResponse(
+        "partials/contribution_success.html",
+        {
+            "request": request,
+            "gift_name": gift_name,
+            "name": name,
+            "amount": amount,
+            "message": message,
+        },
+    )

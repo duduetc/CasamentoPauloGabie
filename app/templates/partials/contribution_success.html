@@ -1,0 +1,45 @@
+<!-- Confirmation success -->
+<div class="relative">
+
+  <button id="modal-close"
+          onclick="closeModal(event)"
+          class="absolute top-4 right-4 z-10 text-charcoal/40 hover:text-charcoal text-2xl leading-none"
+          aria-label="Fechar">×</button>
+
+  <div class="bg-charcoal px-8 pt-10 pb-8 text-center">
+    <p class="font-body text-xs tracking-[.35em] uppercase text-cream/40 mb-1">Contribuição para</p>
+    <h2 class="font-display text-2xl text-cream font-light">{{ gift_name }}</h2>
+  </div>
+
+  <div class="p-10 text-center">
+    <div class="w-14 h-14 rounded-full bg-sage/15 flex items-center justify-center mx-auto mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#7A9E7E" class="w-7 h-7">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+      </svg>
+    </div>
+
+    <h3 class="font-display text-2xl text-charcoal font-light mb-2">Recebemos sua confirmação!</h3>
+    <p class="font-body text-charcoal/60 text-sm leading-relaxed mb-1">
+      Obrigado, <strong class="text-charcoal font-normal">{{ name }}</strong>!
+    </p>
+    <p class="font-body text-charcoal/60 text-sm leading-relaxed mb-6">
+      Sua contribuição de <span class="text-sage font-medium">R$ {{ "%.2f"|format(amount) }}</span> para <em>{{ gift_name }}</em> foi registrada com carinho.
+    </p>
+
+    {% if message %}
+    <div class="border border-charcoal/10 bg-cream px-5 py-4 mb-6 text-left rounded-sm">
+      <p class="font-body text-xs text-muted tracking-widest uppercase mb-1">Seu recado</p>
+      <p class="font-body text-charcoal/70 text-sm italic">"{{ message }}"</p>
+    </div>
+    {% endif %}
+
+    <button onclick="closeModal({target: document.getElementById('modal-backdrop')})"
+            class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300">
+      Fechar
+    </button>
+
+    <div class="mt-8 pt-6 border-t border-charcoal/8">
+      <p class="font-script text-sage text-xl">Com amor — Gabriela & Paulo Isaque</p>
+    </div>
+  </div>
+</div>

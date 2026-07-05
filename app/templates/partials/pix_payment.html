@@ -4,51 +4,80 @@
   <!-- Close button -->
   <button id="modal-close"
           onclick="closeModal(event)"
-          class="absolute top-4 right-4 z-10 text-charcoal/40 hover:text-charcoal text-2xl leading-none"
+          class="absolute top-3 right-4 z-10 text-charcoal/40 hover:text-charcoal text-2xl leading-none"
           aria-label="Fechar">×</button>
 
-  <!-- Header strip -->
-  <div class="bg-charcoal px-8 pt-10 pb-8 text-center">
-    <p class="font-body text-xs tracking-[.35em] uppercase text-cream/40 mb-1">Contribuição para</p>
-    <h2 class="font-display text-2xl text-cream font-light">{{ gift.name }}</h2>
-    <p class="font-script text-sage text-4xl mt-1">R$ {{ "%.2f"|format(amount) }}</p>
+  <!-- Header compacto -->
+  <div class="bg-charcoal px-6 pt-6 pb-5 text-center">
+    <p class="font-body text-xs tracking-[.3em] uppercase text-cream/40 mb-0.5">{{ gift.name }}</p>
+    <p class="font-script text-sage text-3xl">R$ {{ "%.2f"|format(amount) }}</p>
   </div>
 
-  <!-- Body -->
-  <div class="p-8 text-center">
+  <!-- Body: QR + formulário lado a lado -->
+  <div class="p-6">
+    <div class="flex gap-5 items-start">
 
-    <p class="font-body text-sm text-charcoal/60 mb-6">
-      Escaneie o QR Code abaixo com o aplicativo do seu banco para realizar o pagamento via PIX.
-    </p>
-
-    <!-- QR Code image -->
-    <div class="inline-block border border-charcoal/10 p-4 mb-6 rounded-sm shadow-sm">
-      <img src="{{ pix_qr }}"
-           alt="QR Code PIX"
-           class="w-52 h-52 object-contain mx-auto"
-           onerror="this.style.display='none'; document.getElementById('qr-placeholder').style.display='flex'">
-      <!-- Placeholder if image missing -->
-      <div id="qr-placeholder"
-           style="display:none"
-           class="w-52 h-52 bg-cream items-center justify-center flex-col gap-2 text-center">
-        <div class="grid grid-cols-3 gap-1 w-24 h-24 opacity-30">
-          {% for _ in range(9) %}
-          <div class="bg-charcoal rounded-sm"></div>
-          {% endfor %}
+      <!-- QR Code (menor) -->
+      <div class="flex-shrink-0 text-center">
+        <div class="border border-charcoal/10 p-3 rounded-sm shadow-sm inline-block">
+          <img src="{{ pix_qr }}"
+               alt="QR Code PIX"
+               class="w-36 h-36 object-contain"
+               onerror="this.style.display='none'; document.getElementById('qr-placeholder').style.display='flex'">
+          <div id="qr-placeholder"
+               style="display:none"
+               class="w-36 h-36 bg-cream flex items-center justify-center flex-col gap-1">
+            <div class="grid grid-cols-3 gap-1 w-16 h-16 opacity-25">
+              {% for _ in range(9) %}
+              <div class="bg-charcoal rounded-sm"></div>
+              {% endfor %}
+            </div>
+            <p class="font-body text-xs text-muted">PIX</p>
+          </div>
         </div>
-        <p class="font-body text-xs text-muted">QR Code PIX</p>
+        <p class="font-body text-xs text-charcoal/40 mt-2 leading-tight">Escaneie com<br>o app do banco</p>
       </div>
-    </div>
 
-    <button onclick="closeModal({target: document.getElementById('modal-backdrop')})"
-            class="w-full border border-charcoal/20 font-body text-xs tracking-widest uppercase py-3 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-300 mb-3">
-      Fechar
-    </button>
+      <!-- Formulário de confirmação -->
+      <div class="flex-1 min-w-0">
+        <p class="font-body text-xs tracking-[.2em] uppercase text-muted mb-3">Após pagar, confirme aqui</p>
 
-    <!-- Love note -->
-    <div class="mt-8 pt-6 border-t border-charcoal/8">
-      <p class="font-script text-sage text-xl">Obrigado pelo carinho! 🌿</p>
-      <p class="font-body text-xs text-muted mt-1">Gabriela & Paulo Isaque</p>
+        <form hx-post="/presentes/{{ gift.id }}/confirmar"
+              hx-target="#modal-content"
+              hx-swap="innerHTML"
+              class="space-y-2.5">
+
+          <input type="hidden" name="gift_name" value="{{ gift.name }}">
+
+          <div>
+            <label class="font-body text-xs text-charcoal/60 block mb-1">Seu nome <span class="text-sage">*</span></label>
+            <input type="text" name="name" placeholder="Como quer ser identificado?" required
+                   class="w-full border border-charcoal/20 focus:border-charcoal font-body text-charcoal text-sm px-3 py-2 outline-none bg-transparent placeholder:text-charcoal/25">
+          </div>
+
+          <div>
+            <label class="font-body text-xs text-charcoal/60 block mb-1">Valor enviado <span class="text-sage">*</span></label>
+            <div class="flex items-center border border-charcoal/20 focus-within:border-charcoal">
+              <span class="font-body text-charcoal/40 px-3 py-2 border-r border-charcoal/10 text-sm">R$</span>
+              <input type="number" name="amount" min="1" step="0.01" placeholder="0,00" required
+                     value="{{ amount }}"
+                     class="flex-1 bg-transparent font-body text-charcoal px-3 py-2 outline-none text-sm">
+            </div>
+          </div>
+
+          <div>
+            <label class="font-body text-xs text-charcoal/60 block mb-1">Mensagem <span class="text-charcoal/30">(opcional)</span></label>
+            <textarea name="message" rows="2" placeholder="Um recado para os noivos..."
+                      class="w-full border border-charcoal/20 focus:border-charcoal font-body text-charcoal text-sm px-3 py-2 outline-none bg-transparent placeholder:text-charcoal/25 resize-none"></textarea>
+          </div>
+
+          <button type="submit"
+                  class="w-full bg-sage text-cream font-body tracking-widest uppercase text-xs py-3 hover:bg-charcoal transition-all duration-300">
+            Confirmei o envio
+          </button>
+        </form>
+      </div>
+
     </div>
   </div>
 </div>
