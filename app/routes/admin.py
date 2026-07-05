@@ -4,12 +4,19 @@ import csv
 import io
 
 from fastapi import APIRouter, File, Form, Request, UploadFile
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from app import database
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+
+
+def _redirect(url: str):
+    """Redireciona de forma compatível com HTMX e navegação normal."""
+    response = Response(status_code=200)
+    response.headers["HX-Redirect"] = url
+    return response
 
 
 @router.get("/admin", response_class=HTMLResponse)
@@ -30,9 +37,7 @@ async def admin_page(request: Request, q: str = None):
 @router.post("/admin/convite", response_class=HTMLResponse)
 async def admin_add_invite(request: Request, name: str = Form(...), max_guests: int = Form(...), phone: str = Form("")):
     success, msg_or_id = database.add_group(name, max_guests, phone or None)
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
 
 
 @router.post("/admin/importar", response_class=HTMLResponse)
@@ -120,22 +125,16 @@ async def admin_edit_invite(request: Request, group_id: int, name: str = Form(..
             {"request": request, "group": group, "error": msg}
         )
 
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
 
 
 @router.post("/admin/convite/{group_id}/resetar", response_class=HTMLResponse)
 async def admin_reset_invite(request: Request, group_id: int):
     database.reset_group_rsvp(group_id)
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
 
 
 @router.post("/admin/convite/{group_id}/deletar", response_class=HTMLResponse)
 async def admin_delete_invite(request: Request, group_id: int):
     database.delete_group(group_id)
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
