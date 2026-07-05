@@ -11,10 +11,29 @@
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
-  <!-- Google Fonts approximations (IvyOra → Cormorant Garamond; script → Dancing Script) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Dancing+Script:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'AltesseStd';
+      src: url('/static/fonts/altesse-std.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'IvyOraDisplay';
+      src: url('/static/fonts/ivy-ora-display.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'BaskervillePro';
+      src: url('/static/fonts/baskerville-pro-regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
 
   <script>
     tailwind.config = {
@@ -28,9 +47,9 @@
             muted:   '#808080',
           },
           fontFamily: {
-            script:  ['"Dancing Script"', 'cursive'],
-            display: ['"Cormorant Garamond"', 'serif'],
-            body:    ['"EB Garamond"', 'serif'],
+            script:  ['AltesseStd', 'cursive'],
+            display: ['IvyOraDisplay', 'serif'],
+            body:    ['BaskervillePro', 'serif'],
           },
         }
       }
