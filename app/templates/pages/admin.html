@@ -58,38 +58,80 @@
   </div>
 
   <!-- ── CADASTRO & BUSCA ── -->
+
+  {% if request.query_params.get('imported') %}
+  <div class="mb-6 bg-sage/10 border border-sage/30 text-sage font-body text-sm px-5 py-3 rounded-sm flex items-center gap-3">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+    <span><strong>{{ request.query_params.get('imported') }} convites importados</strong>{% if request.query_params.get('duplicates') != '0' %} — {{ request.query_params.get('duplicates') }} ignorados por já existirem{% endif %}.</span>
+  </div>
+  {% endif %}
+
+  {% if import_error is defined and import_error %}
+  <div class="mb-6 bg-red-50 border border-red-200 text-red-700 font-body text-sm px-5 py-3 rounded-sm">{{ import_error }}</div>
+  {% endif %}
+
   <div class="grid md:grid-cols-3 gap-8 mb-10">
-    
-    <!-- Formulário de Cadastro -->
-    <div class="bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs h-fit md:col-span-1">
-      <h3 class="font-display text-lg text-charcoal mb-4 border-b border-charcoal/10 pb-2">Cadastrar Novo Convite</h3>
-      
-      <form action="/admin/convite" method="POST" class="space-y-4">
-        <div>
-          <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Nome no Convite</label>
-          <input type="text"
-                 name="name"
-                 required
-                 placeholder="Ex: Cláudio e família"
-                 class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
-        </div>
 
-        <div>
-          <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Limite de Convidados (Total)</label>
-          <input type="number"
-                 name="max_guests"
-                 min="1"
-                 max="20"
-                 required
-                 value="1"
-                 class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
-        </div>
+    <!-- Formulário de Cadastro + Importação -->
+    <div class="space-y-4 md:col-span-1">
 
-        <button type="submit"
-                class="w-full bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase py-3 transition-all duration-300">
-          Adicionar Convite
-        </button>
-      </form>
+      <div class="bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs">
+        <h3 class="font-display text-lg text-charcoal mb-4 border-b border-charcoal/10 pb-2">Cadastrar Convite</h3>
+
+        <form action="/admin/convite" method="POST" class="space-y-3">
+          <div>
+            <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Nome no Convite</label>
+            <input type="text" name="name" required placeholder="Ex: Cláudio e família"
+                   class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+          </div>
+          <div>
+            <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Vagas</label>
+            <input type="number" name="max_guests" min="1" max="20" required value="1"
+                   class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+          </div>
+          <div>
+            <label class="font-body text-xs text-charcoal/60 uppercase block mb-1">Telefone <span class="text-charcoal/30">(opcional)</span></label>
+            <input type="text" name="phone" placeholder="(11) 99999-9999"
+                   class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+          </div>
+          <button type="submit"
+                  class="w-full bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase py-3 transition-all duration-300">
+            Adicionar Convite
+          </button>
+        </form>
+      </div>
+
+      <!-- Importar planilha -->
+      <div class="bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs">
+        <h3 class="font-display text-lg text-charcoal mb-1 border-b border-charcoal/10 pb-2">Importar Planilha</h3>
+        <p class="font-body text-xs text-muted mb-4 leading-relaxed">CSV ou Excel (.xlsx) com colunas: <strong>nome</strong>, <strong>convidados</strong>, <strong>telefone</strong></p>
+
+        <form action="/admin/importar" method="POST" enctype="multipart/form-data" class="space-y-3">
+          <label class="flex flex-col items-center justify-center border-2 border-dashed border-charcoal/15 hover:border-sage cursor-pointer py-6 px-4 rounded-sm transition-colors gap-2"
+                 id="drop-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="#808080" class="w-7 h-7">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+            </svg>
+            <span class="font-body text-xs text-muted" id="file-label">Clique para selecionar o arquivo</span>
+            <input type="file" name="file" accept=".csv,.xlsx" required class="hidden"
+                   onchange="document.getElementById('file-label').textContent = this.files[0]?.name || 'Clique para selecionar'">
+          </label>
+          <button type="submit"
+                  class="w-full border border-charcoal/20 hover:bg-charcoal hover:text-cream font-body text-xs tracking-widest uppercase py-2.5 transition-all duration-300">
+            Importar
+          </button>
+        </form>
+
+        <div class="mt-4 pt-3 border-t border-charcoal/8">
+          <p class="font-body text-xs text-muted mb-1">Modelo de planilha:</p>
+          <code class="block bg-cream/50 text-charcoal/60 font-mono text-xs px-3 py-2 rounded-sm leading-relaxed">
+            nome,convidados,telefone<br>
+            Cláudio e família,4,(11) 99999-0001<br>
+            Maria Silva,1,(11) 99999-0002
+          </code>
+        </div>
+      </div>
+
     </div>
 
     <!-- Lista de Convites e Busca -->
@@ -120,7 +162,8 @@
           <thead>
             <tr class="border-b border-charcoal/10 text-xs uppercase tracking-wider text-muted font-normal">
               <th class="py-3 px-2">Convite</th>
-              <th class="py-3 px-2 text-center">Limite</th>
+              <th class="py-3 px-2">Telefone</th>
+              <th class="py-3 px-2 text-center">Vagas</th>
               <th class="py-3 px-2">Resposta / Confirmados</th>
               <th class="py-3 px-2 text-right">Ações</th>
             </tr>
@@ -143,8 +186,19 @@
                     </div>
                   {% endif %}
                 </td>
-                
-                <!-- Limite -->
+
+                <!-- Telefone -->
+                <td class="py-3 px-2">
+                  {% if group.phone %}
+                    <a href="https://wa.me/55{{ group.phone | replace('(','') | replace(')','') | replace(' ','') | replace('-','') }}"
+                       target="_blank"
+                       class="font-body text-xs text-sage hover:underline">{{ group.phone }}</a>
+                  {% else %}
+                    <span class="text-charcoal/25 text-xs">—</span>
+                  {% endif %}
+                </td>
+
+                <!-- Vagas -->
                 <td class="py-3 px-2 text-center font-display text-base">{{ group.max_guests }}</td>
                 
                 <!-- Status/Confirmados -->

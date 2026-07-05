@@ -56,6 +56,7 @@ def init_db():
                     id SERIAL PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE,
                     max_guests INTEGER NOT NULL DEFAULT 1,
+                    phone TEXT,
                     status TEXT NOT NULL DEFAULT 'pending',
                     confirmed_count INTEGER DEFAULT 0,
                     confirmed_names TEXT,
@@ -80,6 +81,7 @@ def init_db():
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE,
                     max_guests INTEGER NOT NULL DEFAULT 1,
+                    phone TEXT,
                     status TEXT NOT NULL DEFAULT 'pending',
                     confirmed_count INTEGER DEFAULT 0,
                     confirmed_names TEXT,
@@ -87,6 +89,12 @@ def init_db():
                     updated_at TEXT
                 )
             """)
+            # migração: adiciona coluna phone se não existir (SQLite não suporta IF NOT EXISTS no ADD COLUMN)
+            try:
+                cursor.execute("ALTER TABLE rsvp_groups ADD COLUMN phone TEXT")
+                conn.commit()
+            except Exception:
+                pass
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS contributions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -202,12 +210,15 @@ def get_all_groups(search_query: str = None):
     return [_parse_group(r) for r in rows]
 
 
-def add_group(name: str, max_guests: int):
+def add_group(name: str, max_guests: int, phone: str = None):
     ph = _p()
     with get_db() as conn:
         cursor = conn.cursor()
         try:
-            cursor.execute(f"INSERT INTO rsvp_groups (name, max_guests) VALUES ({ph}, {ph})", (name.strip(), max_guests))
+            cursor.execute(
+                f"INSERT INTO rsvp_groups (name, max_guests, phone) VALUES ({ph}, {ph}, {ph})",
+                (name.strip(), max_guests, phone or None),
+            )
             conn.commit()
             return True, cursor.lastrowid
         except Exception:
@@ -215,12 +226,36 @@ def add_group(name: str, max_guests: int):
             return False, "Este nome de convite já existe."
 
 
-def update_group(group_id: int, name: str, max_guests: int):
+def add_groups_bulk(rows: list[dict]) -> tuple[int, int]:
+    """Importa uma lista de {name, max_guests, phone}. Retorna (inseridos, duplicados)."""
+    inserted = 0
+    duplicates = 0
+    ph = _p()
+    with get_db() as conn:
+        cursor = conn.cursor()
+        for row in rows:
+            try:
+                cursor.execute(
+                    f"INSERT INTO rsvp_groups (name, max_guests, phone) VALUES ({ph}, {ph}, {ph})",
+                    (row["name"].strip(), row["max_guests"], row.get("phone") or None),
+                )
+                conn.commit()
+                inserted += 1
+            except Exception:
+                conn.rollback()
+                duplicates += 1
+    return inserted, duplicates
+
+
+def update_group(group_id: int, name: str, max_guests: int, phone: str = None):
     ph = _p()
     with get_db() as conn:
         cursor = conn.cursor()
         try:
-            cursor.execute(f"UPDATE rsvp_groups SET name={ph}, max_guests={ph} WHERE id={ph}", (name.strip(), max_guests, group_id))
+            cursor.execute(
+                f"UPDATE rsvp_groups SET name={ph}, max_guests={ph}, phone={ph} WHERE id={ph}",
+                (name.strip(), max_guests, phone or None, group_id),
+            )
             conn.commit()
             return True, "Convite atualizado com sucesso."
         except Exception:
