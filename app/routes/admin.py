@@ -21,13 +21,21 @@ def _redirect(url: str):
 
 @router.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request, q: str = None):
+    from app.routes.gifts import GIFTS
     stats = database.get_stats()
     groups = database.get_all_groups(search_query=q)
+    totals = database.get_all_contributions_totals()
+    gift_stats = [
+        {"name": g["name"], "price": g["price"], "contributed": totals.get(g["id"], 0.0)}
+        for g in GIFTS
+    ]
     return templates.TemplateResponse(
         "pages/admin.html",
         {
             "request": request,
             "stats": stats,
+            "gift_stats": gift_stats,
+            "total_arrecadado": sum(totals.values()),
             "groups": groups,
             "search_query": q or "",
         }

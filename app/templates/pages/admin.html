@@ -57,6 +57,28 @@
     </div>
   </div>
 
+  <!-- ── PRESENTES ── -->
+  <div class="bg-white border border-charcoal/8 rounded-sm shadow-xs p-6 mb-10">
+    <div class="flex items-baseline justify-between mb-5 border-b border-charcoal/10 pb-3">
+      <h3 class="font-display text-lg text-charcoal">Lista de Presentes</h3>
+      <p class="font-body text-xs text-muted">Total arrecadado: <span class="text-sage font-medium">R$ {{ "%.2f"|format(total_arrecadado) }}</span></p>
+    </div>
+    <div class="space-y-3">
+      {% for g in gift_stats %}
+      {% set pct = [[g.contributed / g.price * 100, 0]|max, 100]|min %}
+      <div>
+        <div class="flex justify-between items-baseline mb-1">
+          <span class="font-body text-sm text-charcoal">{{ g.name }}</span>
+          <span class="font-body text-xs text-muted">R$ {{ "%.0f"|format(g.contributed) }} / R$ {{ "%.0f"|format(g.price) }}</span>
+        </div>
+        <div class="h-1 bg-charcoal/8 rounded-full">
+          <div class="h-1 bg-sage rounded-full transition-all" style="width: {{ pct }}%"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
   <!-- ── CADASTRO & BUSCA ── -->
 
   {% if request.query_params.get('imported') %}
