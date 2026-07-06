@@ -57,6 +57,7 @@ def init_db():
                     name TEXT NOT NULL UNIQUE,
                     max_guests INTEGER NOT NULL DEFAULT 1,
                     phone TEXT,
+                    guest_names TEXT,
                     status TEXT NOT NULL DEFAULT 'pending',
                     confirmed_count INTEGER DEFAULT 0,
                     confirmed_names TEXT,
@@ -82,6 +83,7 @@ def init_db():
                     name TEXT NOT NULL UNIQUE,
                     max_guests INTEGER NOT NULL DEFAULT 1,
                     phone TEXT,
+                    guest_names TEXT,
                     status TEXT NOT NULL DEFAULT 'pending',
                     confirmed_count INTEGER DEFAULT 0,
                     confirmed_names TEXT,
@@ -89,12 +91,16 @@ def init_db():
                     updated_at TEXT
                 )
             """)
-            # migração: adiciona coluna phone se não existir (SQLite não suporta IF NOT EXISTS no ADD COLUMN)
-            try:
-                cursor.execute("ALTER TABLE rsvp_groups ADD COLUMN phone TEXT")
-                conn.commit()
-            except Exception:
-                pass
+            # migrações de colunas novas
+            for col_sql in [
+                "ALTER TABLE rsvp_groups ADD COLUMN phone TEXT",
+                "ALTER TABLE rsvp_groups ADD COLUMN guest_names TEXT",
+            ]:
+                try:
+                    cursor.execute(col_sql)
+                    conn.commit()
+                except Exception:
+                    pass
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS contributions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -164,6 +170,7 @@ def get_all_contributions_totals() -> dict:
 def _parse_group(row) -> dict:
     group = dict(row)
     group["confirmed_names"] = json.loads(group["confirmed_names"]) if group["confirmed_names"] else []
+    group["guest_names"] = json.loads(group["guest_names"]) if group.get("guest_names") else []
     return group
 
 
@@ -210,14 +217,14 @@ def get_all_groups(search_query: str = None):
     return [_parse_group(r) for r in rows]
 
 
-def add_group(name: str, max_guests: int, phone: str = None):
+def add_group(name: str, max_guests: int, phone: str = None, guest_names: list = None):
     ph = _p()
     with get_db() as conn:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                f"INSERT INTO rsvp_groups (name, max_guests, phone) VALUES ({ph}, {ph}, {ph})",
-                (name.strip(), max_guests, phone or None),
+                f"INSERT INTO rsvp_groups (name, max_guests, phone, guest_names) VALUES ({ph}, {ph}, {ph}, {ph})",
+                (name.strip(), max_guests, phone or None, json.dumps(guest_names, ensure_ascii=False) if guest_names else None),
             )
             conn.commit()
             return True, cursor.lastrowid
@@ -227,7 +234,7 @@ def add_group(name: str, max_guests: int, phone: str = None):
 
 
 def add_groups_bulk(rows: list[dict]) -> tuple[int, int]:
-    """Importa uma lista de {name, max_guests, phone}. Retorna (inseridos, duplicados)."""
+    """Importa uma lista de {name, max_guests, phone, guest_names}. Retorna (inseridos, duplicados)."""
     inserted = 0
     duplicates = 0
     ph = _p()
@@ -235,9 +242,11 @@ def add_groups_bulk(rows: list[dict]) -> tuple[int, int]:
         cursor = conn.cursor()
         for row in rows:
             try:
+                gnames = row.get("guest_names") or []
                 cursor.execute(
-                    f"INSERT INTO rsvp_groups (name, max_guests, phone) VALUES ({ph}, {ph}, {ph})",
-                    (row["name"].strip(), row["max_guests"], row.get("phone") or None),
+                    f"INSERT INTO rsvp_groups (name, max_guests, phone, guest_names) VALUES ({ph}, {ph}, {ph}, {ph})",
+                    (row["name"].strip(), row["max_guests"], row.get("phone") or None,
+                     json.dumps(gnames, ensure_ascii=False) if gnames else None),
                 )
                 conn.commit()
                 inserted += 1

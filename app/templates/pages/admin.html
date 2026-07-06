@@ -58,12 +58,19 @@
   </div>
 
   <!-- ── PRESENTES ── -->
-  <div class="bg-white border border-charcoal/8 rounded-sm shadow-xs p-6 mb-10">
-    <div class="flex items-baseline justify-between mb-5 border-b border-charcoal/10 pb-3">
-      <h3 class="font-display text-lg text-charcoal">Lista de Presentes</h3>
-      <p class="font-body text-xs text-muted">Total arrecadado: <span class="text-sage font-medium">R$ {{ "%.2f"|format(total_arrecadado) }}</span></p>
-    </div>
-    <div class="space-y-3">
+  <div class="bg-white border border-charcoal/8 rounded-sm shadow-xs mb-10">
+    <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180')"
+            class="w-full flex items-center justify-between px-6 py-4 text-left">
+      <div class="flex items-center gap-4">
+        <h3 class="font-display text-lg text-charcoal">Presentes</h3>
+        <span class="font-body text-xs text-muted">Total arrecadado: <span class="text-sage font-medium">R$ {{ "%.2f"|format(total_arrecadado) }}</span></span>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+           class="w-4 h-4 text-muted transition-transform duration-200">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+      </svg>
+    </button>
+    <div class="hidden px-6 pb-6 space-y-3 border-t border-charcoal/8 pt-4">
       {% for g in gift_stats %}
       {% set pct = [[g.contributed / g.price * 100, 0]|max, 100]|min %}
       <div>
@@ -202,6 +209,9 @@
                 <!-- Nome -->
                 <td class="py-3 px-2">
                   <div class="font-medium text-charcoal">{{ group.name }}</div>
+                  {% if group.guest_names %}
+                    <div class="text-xs text-muted mt-0.5 leading-relaxed">{{ group.guest_names | join(", ") }}</div>
+                  {% endif %}
                   {% if group.declined_reason %}
                     <div class="text-xs text-red-500 italic mt-0.5 max-w-[200px] truncate" title="{{ group.declined_reason }}">
                       Mensagem: "{{ group.declined_reason }}"
