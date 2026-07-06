@@ -72,25 +72,30 @@ async def admin_import(request: Request, file: UploadFile = File(...)):
             wb = openpyxl.load_workbook(io.BytesIO(content))
             ws = wb.active
 
-            # Detecta formato "Lista - SITE":
-            # col A = Quant., col B = Nome Subscrito no convite, col D = Celular
-            # Linha 2 tem os cabeçalhos; dados começam na linha 4
-            # Só importa linhas onde col A é número e col B é texto (convite principal)
+            # col A = Quant., col B = Nome Subscrito, col C = Nome do convidado, col D = Celular
+            # Linhas principais: col A é número e col B tem texto
+            # Sub-linhas: col A e B vazias, col C tem nome do acompanhante
+            current = None
             for row in ws.iter_rows(min_row=4, values_only=True):
-                quant = row[0] if len(row) > 0 else None
-                nome  = row[1] if len(row) > 1 else None
+                quant     = row[0] if len(row) > 0 else None
+                nome      = row[1] if len(row) > 1 else None
+                guest_col = row[2] if len(row) > 2 else None
                 phone_val = row[3] if len(row) > 3 else None
 
-                # ignora linhas de categoria, sub-convidados e vazias
-                if not isinstance(quant, (int, float)) or not nome:
-                    continue
-
-                name_str  = str(nome).strip()
-                phone_str = str(phone_val).strip() if phone_val else ""
-                max_g     = int(quant)
-
-                if name_str:
-                    rows.append({"name": name_str, "max_guests": max_g, "phone": phone_str})
+                if isinstance(quant, (int, float)) and nome:
+                    # linha principal do convite
+                    current = {
+                        "name": str(nome).strip(),
+                        "max_guests": int(quant),
+                        "phone": str(phone_val).strip() if phone_val else "",
+                        "guest_names": [str(guest_col).strip()] if guest_col else [],
+                    }
+                    rows.append(current)
+                elif current and guest_col and not quant and not nome:
+                    # sub-linha de acompanhante
+                    guest_name = str(guest_col).strip()
+                    if guest_name:
+                        current["guest_names"].append(guest_name)
         else:
             error = "Formato não suportado. Envie um arquivo .csv ou .xlsx."
 

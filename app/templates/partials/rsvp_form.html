@@ -65,7 +65,7 @@
         </p>
 
         <!-- Main Guest slot -->
-        {% set suggested_main = group.name.replace(' e família', '').replace(' e acompanhante', '').replace(' e cônjuge', '').replace(' e Acompanhante', '') %}
+        {% set suggested_main = group.guest_names[0] if group.guest_names else group.name.replace(' e família', '').replace(' e acompanhante', '').replace(' e cônjuge', '').replace(' e Acompanhante', '') %}
         <div class="border border-charcoal/10 rounded-sm p-4 bg-cream/5">
           <div class="flex items-start gap-3">
             <div class="flex items-center h-5">
@@ -97,13 +97,15 @@
         {% if group.max_guests > 1 %}
           <div class="space-y-3">
             <h4 class="font-display text-sm uppercase tracking-wider text-charcoal/60">Acompanhantes adicionais (Máx: {{ group.max_guests - 1 }})</h4>
-            
+
             {% for i in range(group.max_guests - 1) %}
               {% set current_val = "" %}
               {% if group.status == 'confirmed' and group.confirmed_names and group.confirmed_names|length > (i + 1) %}
                 {% set current_val = group.confirmed_names[i + 1] %}
+              {% elif group.guest_names and group.guest_names|length > (i + 1) %}
+                {% set current_val = group.guest_names[i + 1] %}
               {% endif %}
-              
+
               <div class="border border-charcoal/10 rounded-sm p-4 bg-cream/5">
                 <div class="flex items-start gap-3">
                   <div class="flex items-center h-5">

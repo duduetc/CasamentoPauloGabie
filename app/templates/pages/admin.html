@@ -202,6 +202,9 @@
                 <!-- Nome -->
                 <td class="py-3 px-2">
                   <div class="font-medium text-charcoal">{{ group.name }}</div>
+                  {% if group.guest_names %}
+                    <div class="text-xs text-muted mt-0.5 leading-relaxed">{{ group.guest_names | join(", ") }}</div>
+                  {% endif %}
                   {% if group.declined_reason %}
                     <div class="text-xs text-red-500 italic mt-0.5 max-w-[200px] truncate" title="{{ group.declined_reason }}">
                       Mensagem: "{{ group.declined_reason }}"
