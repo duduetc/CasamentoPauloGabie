@@ -1,8 +1,10 @@
-"""Rotas da página de presentes, modal HTMX e exibição do PIX estático."""
+"""Rotas da página de presentes, modal HTMX e PIX."""
 
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
+from app.database import add_contribution, get_all_contributions_totals
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -14,7 +16,6 @@ GIFTS = [
         "description": "Conjunto de panelas antiaderentes de alta qualidade",
         "price": 850.00,
         "image": "/static/images/gifts/panelas.jpg",
-        "contributed": 0,
     },
     {
         "id": 2,
@@ -22,7 +23,6 @@ GIFTS = [
         "description": "Batedeira planetária Stand Mixer 4,7L",
         "price": 2500.00,
         "image": "/static/images/gifts/kitchenaid.jpg",
-        "contributed": 0,
     },
     {
         "id": 3,
@@ -30,7 +30,6 @@ GIFTS = [
         "description": "Jogo de cama king 400 fios, 100% algodão egípcio",
         "price": 1200.00,
         "image": "/static/images/gifts/cama.jpg",
-        "contributed": 600,
     },
     {
         "id": 4,
@@ -38,7 +37,6 @@ GIFTS = [
         "description": "Contribuição para a viagem dos noivos",
         "price": 10000.00,
         "image": "/static/images/gifts/viagem.jpg",
-        "contributed": 3000,
     },
     {
         "id": 5,
@@ -46,7 +44,6 @@ GIFTS = [
         "description": "Adega climatizada para 12 garrafas",
         "price": 1800.00,
         "image": "/static/images/gifts/adega.jpg",
-        "contributed": 0,
     },
     {
         "id": 6,
@@ -54,7 +51,6 @@ GIFTS = [
         "description": "Kit 8 toalhas felpudas premium",
         "price": 480.00,
         "image": "/static/images/gifts/toalhas.jpg",
-        "contributed": 480,
     },
 ]
 
@@ -62,18 +58,26 @@ PIX_QR_CODE_IMG = "/static/images/pix_qr.png"
 PIX_COPY_PASTE = "077.994.921-80"
 
 
+def _gifts_with_contributions() -> list:
+    totals = get_all_contributions_totals()
+    return [
+        {**g, "contributed": totals.get(g["id"], 0.0)}
+        for g in GIFTS
+    ]
+
 
 @router.get("/presentes", response_class=HTMLResponse)
 async def gifts_page(request: Request):
     return templates.TemplateResponse(
         "pages/gifts.html",
-        {"request": request, "gifts": GIFTS},
+        {"request": request, "gifts": _gifts_with_contributions()},
     )
 
 
 @router.get("/presentes/{gift_id}/modal", response_class=HTMLResponse)
 async def gift_modal(request: Request, gift_id: int):
-    gift = next((g for g in GIFTS if g["id"] == gift_id), None)
+    gifts = _gifts_with_contributions()
+    gift = next((g for g in gifts if g["id"] == gift_id), None)
     if not gift:
         return HTMLResponse("<p>Presente não encontrado.</p>", status_code=404)
     return templates.TemplateResponse(
@@ -89,7 +93,8 @@ async def gift_modal(request: Request, gift_id: int):
 
 @router.post("/presentes/{gift_id}/contribuir", response_class=HTMLResponse)
 async def contribute(request: Request, gift_id: int, amount: float = Form(...)):
-    gift = next((g for g in GIFTS if g["id"] == gift_id), None)
+    gifts = _gifts_with_contributions()
+    gift = next((g for g in gifts if g["id"] == gift_id), None)
     if not gift:
         return HTMLResponse("<p>Presente não encontrado.</p>", status_code=404)
     return templates.TemplateResponse(
@@ -113,6 +118,13 @@ async def confirm_contribution(
     message: str = Form(""),
     gift_name: str = Form(""),
 ):
+    add_contribution(
+        gift_id=gift_id,
+        gift_name=gift_name,
+        contributor_name=name,
+        amount=amount,
+        message=message,
+    )
     return templates.TemplateResponse(
         "partials/contribution_success.html",
         {

@@ -36,7 +36,7 @@
 
       <div>
         <label class="font-body text-xs tracking-wider text-charcoal/60 uppercase block mb-1">
-          Limite de Convidados (Total)
+          Vagas
         </label>
         <input type="number"
                name="max_guests"
@@ -44,6 +44,17 @@
                max="20"
                value="{{ group.max_guests }}"
                required
+               class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+      </div>
+
+      <div>
+        <label class="font-body text-xs tracking-wider text-charcoal/60 uppercase block mb-1">
+          Telefone <span class="text-charcoal/30">(opcional)</span>
+        </label>
+        <input type="text"
+               name="phone"
+               value="{{ group.phone or '' }}"
+               placeholder="(11) 99999-9999"
                class="w-full bg-cream/30 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
       </div>
 

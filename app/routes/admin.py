@@ -1,12 +1,22 @@
 """Rotas do painel administrativo de gerenciamento de convidados RSVP."""
 
-from fastapi import APIRouter, Form, Request, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+import csv
+import io
+
+from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from app import database
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+
+
+def _redirect(url: str):
+    """Redireciona de forma compatível com HTMX e navegação normal."""
+    response = Response(status_code=200)
+    response.headers["HX-Redirect"] = url
+    return response
 
 
 @router.get("/admin", response_class=HTMLResponse)
@@ -25,10 +35,71 @@ async def admin_page(request: Request, q: str = None):
 
 
 @router.post("/admin/convite", response_class=HTMLResponse)
-async def admin_add_invite(request: Request, name: str = Form(...), max_guests: int = Form(...)):
-    success, msg_or_id = database.add_group(name, max_guests)
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
+async def admin_add_invite(request: Request, name: str = Form(...), max_guests: int = Form(...), phone: str = Form("")):
+    success, msg_or_id = database.add_group(name, max_guests, phone or None)
+    return _redirect("/admin")
+
+
+@router.post("/admin/importar", response_class=HTMLResponse)
+async def admin_import(request: Request, file: UploadFile = File(...)):
+    filename = file.filename.lower()
+    rows = []
+    error = None
+
+    try:
+        if filename.endswith(".csv"):
+            content = (await file.read()).decode("utf-8-sig")
+            reader = csv.DictReader(io.StringIO(content))
+            for r in reader:
+                # aceita cabeçalhos em português ou inglês
+                name = r.get("nome") or r.get("name") or r.get("Nome") or r.get("Name") or ""
+                max_guests_raw = r.get("convidados") or r.get("max_guests") or r.get("Convidados") or r.get("vagas") or r.get("Vagas") or "1"
+                phone = r.get("telefone") or r.get("phone") or r.get("Telefone") or r.get("Phone") or ""
+                if name.strip():
+                    rows.append({"name": name.strip(), "max_guests": int(str(max_guests_raw).strip() or 1), "phone": phone.strip()})
+
+        elif filename.endswith(".xlsx"):
+            import openpyxl
+            content = await file.read()
+            wb = openpyxl.load_workbook(io.BytesIO(content))
+            ws = wb.active
+
+            # Detecta formato "Lista - SITE":
+            # col A = Quant., col B = Nome Subscrito no convite, col D = Celular
+            # Linha 2 tem os cabeçalhos; dados começam na linha 4
+            # Só importa linhas onde col A é número e col B é texto (convite principal)
+            for row in ws.iter_rows(min_row=4, values_only=True):
+                quant = row[0] if len(row) > 0 else None
+                nome  = row[1] if len(row) > 1 else None
+                phone_val = row[3] if len(row) > 3 else None
+
+                # ignora linhas de categoria, sub-convidados e vazias
+                if not isinstance(quant, (int, float)) or not nome:
+                    continue
+
+                name_str  = str(nome).strip()
+                phone_str = str(phone_val).strip() if phone_val else ""
+                max_g     = int(quant)
+
+                if name_str:
+                    rows.append({"name": name_str, "max_guests": max_g, "phone": phone_str})
+        else:
+            error = "Formato não suportado. Envie um arquivo .csv ou .xlsx."
+
+    except Exception as e:
+        error = f"Erro ao processar arquivo: {e}"
+
+    if error:
+        return templates.TemplateResponse("pages/admin.html", {
+            "request": request,
+            "stats": database.get_stats(),
+            "groups": database.get_all_groups(),
+            "search_query": "",
+            "import_error": error,
+        })
+
+    inserted, duplicates = database.add_groups_bulk(rows)
+    response = RedirectResponse(url=f"/admin?imported={inserted}&duplicates={duplicates}", status_code=303)
     return response
 
 
@@ -45,8 +116,8 @@ async def admin_edit_form(request: Request, group_id: int):
 
 
 @router.post("/admin/convite/{group_id}/editar", response_class=HTMLResponse)
-async def admin_edit_invite(request: Request, group_id: int, name: str = Form(...), max_guests: int = Form(...)):
-    success, msg = database.update_group(group_id, name, max_guests)
+async def admin_edit_invite(request: Request, group_id: int, name: str = Form(...), max_guests: int = Form(...), phone: str = Form("")):
+    success, msg = database.update_group(group_id, name, max_guests, phone or None)
     if not success:
         group = database.get_group_by_id(group_id)
         return templates.TemplateResponse(
@@ -54,22 +125,16 @@ async def admin_edit_invite(request: Request, group_id: int, name: str = Form(..
             {"request": request, "group": group, "error": msg}
         )
 
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
 
 
 @router.post("/admin/convite/{group_id}/resetar", response_class=HTMLResponse)
 async def admin_reset_invite(request: Request, group_id: int):
     database.reset_group_rsvp(group_id)
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
 
 
 @router.post("/admin/convite/{group_id}/deletar", response_class=HTMLResponse)
 async def admin_delete_invite(request: Request, group_id: int):
     database.delete_group(group_id)
-    response = RedirectResponse(url="/admin", status_code=303)
-    response.headers["HX-Redirect"] = "/admin"
-    return response
+    return _redirect("/admin")
