@@ -2,13 +2,32 @@
 
 import csv
 import io
+import os
+import secrets
 
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from app import database
 
-router = APIRouter()
+security = HTTPBasic()
+
+ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "casamento2026")
+
+
+def require_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    ok_user = secrets.compare_digest(credentials.username.encode(), ADMIN_USER.encode())
+    ok_pass = secrets.compare_digest(credentials.password.encode(), ADMIN_PASSWORD.encode())
+    if not (ok_user and ok_pass):
+        raise HTTPException(
+            status_code=401,
+            detail="Acesso negado.",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+router = APIRouter(dependencies=[Depends(require_admin)])
 templates = Jinja2Templates(directory="app/templates")
 
 
