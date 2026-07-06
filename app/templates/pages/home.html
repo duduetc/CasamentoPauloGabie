@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Paulo & Gabie — Nosso Casamento{% endblock %}
+{% block title %}Gabriela & Paulo Isaque — Nosso Casamento{% endblock %}
 
 {% block head %}
 <style>
@@ -56,7 +56,7 @@
   <!-- Background photo placeholder (swap src for real couple photo) -->
   <div class="absolute inset-0">
     <img src="/static/images/MELQ5754.jpg"
-         alt="Paulo e Gabie"
+         alt="Gabriela e Paulo Isaque"
          class="hero-img"
          onerror="this.style.display='none'">
     <!-- gradient overlay -->
@@ -70,10 +70,10 @@
     </p>
     <h1 class="fade-up delay-1 font-script text-cream leading-none"
         style="font-size: clamp(3.5rem, 10vw, 8rem);">
-      Paulo &amp; Gabie
+      Gabriela &amp; Paulo Isaque
     </h1>
     <p class="fade-up delay-2 font-display text-cream/70 text-xl md:text-2xl font-light mt-3 italic">
-      12 de Setembro de 2026 · São Paulo
+      07 de Setembro de 2026 · Brasília
     </p>
     <div class="fade-up delay-3 mt-8">
       <a href="/presentes"
@@ -95,10 +95,10 @@
 ──────────────────────────────────────────────────────────── -->
 <div class="overflow-hidden py-6 border-y border-charcoal/10 bg-cream">
   <div class="divider-script animate-[marquee_18s_linear_infinite]">
-    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026 &nbsp;·&nbsp;
-    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026 &nbsp;·&nbsp;
-    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026 &nbsp;·&nbsp;
-    Paulo &amp; Gabie &nbsp;·&nbsp; 12.09.2026
+    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
+    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
+    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026 &nbsp;·&nbsp;
+    Gabriela &amp; Paulo Isaque &nbsp;·&nbsp; 07.09.2026
   </div>
 </div>
 <style>
@@ -143,15 +143,26 @@
     <div>
       <p class="font-body text-xs tracking-[.3em] uppercase text-muted mb-4">Nossa história</p>
       <h2 class="font-display text-4xl md:text-5xl font-light leading-tight mb-6">
-        Uma história que começou com um sorriso
+        Escrita pelas mãos de Deus
       </h2>
       <div class="rule mb-6"></div>
-      <p class="font-body text-lg text-charcoal/75 leading-relaxed mb-5">
-        Nos conhecemos em 2019 numa tarde de outubro que nenhum dos dois esquece. Desde então, cada dia juntos foi uma nova razão para sorrir.
-      </p>
-      <p class="font-body text-lg text-charcoal/75 leading-relaxed">
-        Em setembro de 2026, vamos celebrar o amor que construímos — e queremos que você faça parte desse momento tão especial.
-      </p>
+      <div class="space-y-4 font-body text-lg text-charcoal/75 leading-relaxed">
+        <p>
+          Nossa caminhada começou de maneira inesperada, mas com muita leveza. Nos conhecemos em 2020, no meio da pandemia, por causa de um amigo em comum e, desde a primeira conversa, percebemos algo diferente.
+        </p>
+        <p>
+          Em 2021, notamos que já não fazia mais sentido permanecermos somente amigos e, assim, iniciamos uma jornada de amor, carinho e dedicação. Com o tempo, alinhamos nossos objetivos e propósitos e tivemos a convicção de que Deus havia nos unido para caminharmos para sempre juntos.
+        </p>
+        <p>
+          O pedido de casamento aconteceu no Espaço da Lenda, o local em que sempre sonhamos casar, como um ato de fé em tudo aquilo que o Senhor poderia realizar. Assim, desde o dia 04 de setembro de 2025, temos experimentado o amor e o cuidado de Deus em cada detalhe.
+        </p>
+        <p class="italic text-base text-charcoal/60 mt-4 border-l-2 border-sage/40 pl-4">
+          “Aquele que é capaz de fazer infinitamente mais do que tudo o que pedimos ou pensamos, segundo o seu poder que atua em nós” — Efésios 3:20
+        </p>
+        <p class="mt-4">
+          Ter você conosco nesse dia será de grande alegria, pois sempre sonhamos em compartilhar esse momento com as pessoas que amamos. Por isso, estamos ansiosos para celebrar com você o nascimento da nossa família com a certeza de que Cristo estará nos guiando eternamente.
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -168,10 +179,10 @@
       <div class="timeline-line"></div>
 
       {% set events = [
-        ("2019", "Primeiro encontro", "Uma tarde de outubro que mudou tudo."),
-        ("2021", "Primeira viagem juntos", "Lisboa nos ensinou que somos parceiros de vida."),
-        ("2023", "Noivado", "Ele pediu em casamento ao pôr do sol na Praia da Joaquina."),
-        ("2026", "Casamento", "12 de setembro — o dia mais especial de nossas vidas."),
+        ("2020", "Como tudo começou", "Nos conhecemos no meio da pandemia por causa de um amigo em comum."),
+        ("2021", "Início do Namoro", "Decidimos dar um passo além da amizade e iniciar uma jornada de amor, carinho e dedicação."),
+        ("2025", "O Pedido de Casamento", "Aconteceu em 04 de setembro de 2025 no Espaço da Lenda, o lugar dos nossos sonhos."),
+        ("2026", "Casamento", "07 de setembro de 2026 — o nascimento da nossa família guiada por Cristo."),
       ] %}
 
       {% for year, title, desc in events %}
@@ -198,17 +209,32 @@
 
   <div class="grid md:grid-cols-3 gap-px bg-charcoal/10">
     {% set details = [
-      ("📍", "Local", "Espaço Villa São Paulo\nAv. Brigadeiro Faria Lima, 2000"),
-      ("🕔", "Horário", "Cerimônia às 16h\nRecepção às 19h"),
-      ("👗", "Traje", "Black Tie\nConvidados são bem-vindos de preto"),
+      ("📍", "Local", 'Espaço da Lenda<br><a href="https://maps.app.goo.gl/xgL2ELWQPYKeh8Dc9?g_st=iw" target="_blank" class="text-xs text-sage hover:underline block mt-1">Ver localização ↗</a>'),
+      ("🕔", "Horário", "Cerimônia às 15h30"),
+      ("👗", "Traje", "Passeio Completo"),
     ] %}
     {% for icon, label, text in details %}
     <div class="bg-cream p-10 text-center flex flex-col items-center gap-3">
       <span class="text-3xl">{{ icon }}</span>
       <p class="font-body text-xs tracking-[.3em] uppercase text-muted">{{ label }}</p>
-      <p class="font-display text-xl font-light leading-snug whitespace-pre-line">{{ text }}</p>
+      <p class="font-display text-xl font-light leading-snug whitespace-pre-line">{{ text | safe }}</p>
     </div>
     {% endfor %}
+  </div>
+
+  <!-- Dicas para o conforto -->
+  <div class="mt-16 max-w-2xl mx-auto bg-sage/10 border border-sage/20 p-8 rounded-sm">
+    <h3 class="font-display text-2xl font-light text-charcoal text-center mb-6">Dicas para o seu conforto</h3>
+    <ul class="space-y-4 font-body text-base text-charcoal/80 leading-relaxed">
+      <li class="flex items-start gap-3">
+        <span class="text-sage text-lg select-none">🌿</span>
+        <span>Recomendamos que não seja utilizado salto alto fino, pois a cerimônia será realizada no gramado.</span>
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="text-sage text-lg select-none">☀️</span>
+        <span>Aconselhamos que usem protetor solar e repelente devido à exposição ao sol e à área verde do local.</span>
+      </li>
+    </ul>
   </div>
 </section>
 
@@ -234,7 +260,7 @@
 {% block scripts %}
 <script>
   // Countdown timer
-  const weddingDate = new Date('2026-09-12T16:00:00');
+  const weddingDate = new Date('2026-09-07T15:30:00');
   function updateCountdown() {
     const now = new Date();
     const diff = weddingDate - now;
