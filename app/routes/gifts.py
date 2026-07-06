@@ -136,6 +136,48 @@ GIFTS = [
         "price": 780.00,
         "image": "/static/images/gifts/kitchenaid.jpg",
     },
+    {
+        "id": 19,
+        "name": "Smart TV 55\"",
+        "description": "Televisor Smart 55 polegadas com resolução 4K",
+        "price": 3200.00,
+        "image": "/static/images/gifts/tv.svg",
+    },
+    {
+        "id": 20,
+        "name": "Máquina de Café Espresso",
+        "description": "Máquina de café espresso automática para o dia a dia",
+        "price": 950.00,
+        "image": "/static/images/gifts/cafe.svg",
+    },
+    {
+        "id": 21,
+        "name": "Conjunto de Facas",
+        "description": "Conjunto profissional de facas para cozinha",
+        "price": 380.00,
+        "image": "/static/images/gifts/facas.svg",
+    },
+    {
+        "id": 22,
+        "name": "Mixer de Mão",
+        "description": "Mixer de mão potente para preparar molhos e sopas",
+        "price": 220.00,
+        "image": "/static/images/gifts/mixer.svg",
+    },
+    {
+        "id": 23,
+        "name": "Conjunto de Panelas Tramontina",
+        "description": "Conjunto de panelas em inox para o dia a dia",
+        "price": 780.00,
+        "image": "/static/images/gifts/panelas2.svg",
+    },
+    {
+        "id": 24,
+        "name": "Caixa de Experiência",
+        "description": "Vale para jantar romântico ou experiência a escolher",
+        "price": 450.00,
+        "image": "/static/images/gifts/experiencia.svg",
+    },
 ]
 
 PIX_QR_CODE_IMG = "/static/images/pix_qr.png"
