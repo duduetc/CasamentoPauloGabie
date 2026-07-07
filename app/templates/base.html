@@ -88,11 +88,60 @@
       justify-content: center;
     }
     #modal-backdrop.open { display: flex; }
+
+    /* music toggle */
+    .music-toggle {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 60;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .65rem .9rem;
+      border: 1px solid rgba(17,17,17,.16);
+      border-radius: 999px;
+      background: rgba(245,240,232,.9);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 20px rgba(17,17,17,.12);
+      color: #111111;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .music-toggle:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(17,17,17,.16); }
+    .vinyl-disc {
+      position: relative;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 999px;
+      background: radial-gradient(circle at 35% 35%, #f7f2e7 0, #d8c79c 25%, #2d2d2b 26%, #111 100%);
+      border: 2px solid #111;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .vinyl-disc::before {
+      content: '';
+      width: .38rem;
+      height: .38rem;
+      border-radius: 999px;
+      background: #f5f0e8;
+      border: 1px solid rgba(17,17,17,.3);
+    }
+    .music-toggle .music-label { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; font-family: 'BaskervillePro', serif; }
+    .music-toggle.is-paused { opacity: .75; }
   </style>
 
   {% block head %}{% endblock %}
 </head>
 <body class="min-h-screen">
+
+  <button id="music-toggle" class="music-toggle is-paused" type="button" aria-label="Tocar música" aria-pressed="false">
+    <span class="vinyl-disc" aria-hidden="true"></span>
+  </button>
+
+  <audio id="site-audio" preload="auto" autoplay data-playlist="/static/audio/10_000Hours-JB.mp3,/static/audio/Dancing.mp3,/static/audio/FinalFeliz-JorgeVercillo.mp3,/static/audio/ThisLoveOfMine-FrankSinatra.mp3"></audio>
 
   <!-- ── Navigation ─────────────────────────────────────────────── -->
   <nav class="fixed top-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-sm border-b border-charcoal/10">
@@ -158,6 +207,7 @@
     }
   </script>
 
+  <script src="/static/js/ui.js"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
