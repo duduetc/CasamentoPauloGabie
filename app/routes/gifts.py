@@ -57,7 +57,7 @@ GIFTS = [
         "name": "Jarra de Vidro",
         "description": "Jarra de vidro para servir bebidas",
         "price": 80.00,
-        "image": "/static/images/gifts/jarradevidro.jpg",
+        "image": "/static/images/gifts/jarra_de_vidro.webp",
     },
     {
         "id": 8,
@@ -184,203 +184,203 @@ GIFTS = [
         "description": "Forma para bolo de silicone para preparar doces deliciosos",
         "price": 60.00,
         "image": "/static/images/gifts/forma_bolo.jpg",
-    }
+    },
     {
         "id": 26,
         "name": "Forma para pão",
         "description": "Forma para pão de silicone para preparar pães caseiros",
         "price": 50.00,
         "image": "/static/images/gifts/forma_pao.webp",
-    }
+    },
     {
         "id": 27,
         "name": "Kit Assadeira de Vidro",
         "description": "Kit de assadeiras de vidro para preparar receitas no forno",
         "price": 120.00,
         "image": "/static/images/gifts/kit_assadeira.jpg",
-    }
+    },
     {
         "id": 28,
         "name": "Chaleira Elétrica",
         "description": "Chaleira elétrica para preparar chá e café",
         "price": 180.00,
         "image": "/static/images/gifts/chaleira.jpg",
-    }
+    },
     {
         "id": 29,
         "name": "Centrífuga de Saladas",
         "description": "Centrífuga para preparar saladas e sucos",
         "price": 90.00,
         "image": "/static/images/gifts/centrifuga.jpg",
-    }
+    },
     {
         "id": 30,
         "name": "Moedor de Temperos",
         "description": "Moedor de temperos para preparar especiarias caseiras",
         "price": 80.00,
         "image": "/static/images/gifts/moedor_temperos.jpg",
-    }
+    },
     {
         "id": 31,
         "name": "Kit de potes herméticos",
         "description": "Kit de potes herméticos para armazenar alimentos",
         "price": 180.00,
         "image": "/static/images/gifts/kit_potes.jpg",
-    }
+    },
     {
         "id": 32,
         "name": "Porta-temperos",
         "description": "Porta-temperos para organizar a cozinha",
         "price": 150.00,
         "image": "/static/images/gifts/porta_temperos.jpg",
-    }
+    },
     {
         "id": 33,
         "name": "Escorredor de louças inox",
         "description": "Escorredor de louças em aço inox para secar utensílios de cozinha",
         "price": 220.00,
         "image": "/static/images/gifts/escorredor_loucas.jpg",
-    }
+    },
     {
         "id": 34,
-        "name": "Lixeira Inox"
+        "name": "Lixeira Inox",
         "description": "Lixeira de aço inox para cozinha",
         "price": 220.00,
         "image": "/static/images/gifts/lixeira_inox.jpg",
-    }
+    },
     {
         "id": 35,
         "name": "Tábuas de corte",
         "description": "Tábuas de corte em madeira para preparar alimentos",
         "price": 150.00,
         "image": "/static/images/gifts/tabuas_corte.jpg",
-    }
+    },
     {
         "id": 36,
         "name": "Ralador multifuncional",
         "description": "Ralador multifuncional para preparar ingredientes",
         "price": 90.00,
         "image": "/static/images/gifts/ralador_multifuncional.jpg",
-    }
+    },
     {
         "id": 37,
         "name": "Kit de Espátulas de Silicone",
         "description": "Kit de espátulas de silicone para preparar alimentos",
         "price": 100.00,
         "image": "/static/images/gifts/kit_espatulas.webp",
-    }
+    },
     {
         "id": 38,
         "name": "Porta Guardanapos",
         "description": "Porta guardanapos para organizar a cozinha",
         "price": 80.00,
         "image": "/static/images/gifts/porta_guardanapos.jpg",
-    }
+    },
     {
         "id": 39,
         "name": "Fruteira",
         "description": "Fruteira para organizar frutas e legumes",
         "price": 180.00,
         "image": "/static/images/gifts/fruteira.jpg",
-    }
+    },
     {
         "id": 40,
         "name": "Cesto de Roupas",
         "description": "Cesto de roupas para organizar a lavanderia",
         "price": 180.00,
         "image": "/static/images/gifts/cesto_roupas.jpg",
-    }
+    },
     {
         "id": 41,
         "name": "Varal de Chão",
         "description": "Varal de chão para secar roupas",
         "price": 180.00,
         "image": "/static/images/gifts/varal_chao.jpg",
-    }
+    },
     {
         "id": 42,
         "name": "Vaporizador de roupas",
         "description": "Vaporizador de roupas para alisar tecidos",
         "price": 350.00,
         "image": "/static/images/gifts/vaporizador_roupas.jpg",
-    }
+    },
     {
         "id": 43,
         "name": "Cabides de Veludo",
         "description": "50 unidades de cabides de veludo para organizar a roupa",
         "price": 150.00,
         "image": "/static/images/gifts/cabides_veludo.jpg",
-    }
+    },
     {
         "id": 44,
         "name": "Caixas Organizadoras",
         "description": "Caixas organizadoras para armazenar itens na cozinha",
         "price": 100.00,
         "image": "/static/images/gifts/caixas_organizadoras.jpg",
-    }
+    },
     {
         "id": 45,
         "name": "Almofadas Decorativas",
         "description": "Kit de almofadas decorativas para complementar a decoração da casa",
         "price": 180.00,
         "image": "/static/images/gifts/almofadas_decorativas.jpg",
-    }
+    },
     {
         "id": 46,
         "name": "Capas para travesseiros",
         "description": "Conjunto de capas para travesseiros para complementar a decoração da casa",
         "price": 90.00,
         "image": "/static/images/gifts/capas_travesseiros.jpg",
-    }
+    },
     {
         "id": 47,
         "name": "Difusor de Aromas",
         "description": "Difusor de aromas para perfumdar o ambiente",
         "price": 180.00,
         "image": "/static/images/gifts/difusor_aromas.jpg",
-    }
+    },
     {
         "id": 48,
         "name": "Acessórios de Banheiro",
         "description": "Conjunto de acessórios de banheiro para complementar a decoração da casa",
         "price": 180.00,
         "image": "/static/images/gifts/acessorios_banheiro.jpg",
-    }
+    },
     {
         "id": 49,
         "name": "Organizador de Bancada",
         "description": "Organizador de bancada para organizar itens na cozinha",
         "price": 100.00,
         "image": "/static/images/gifts/organizador_bancada.jpg",
-    }
+    },
     {
         "id": 50,
         "name": "Mesa de Apoio",
         "description": "Mesa de apoio para complementar a decoração da casa",
         "price": 280.00,
         "image": "/static/images/gifts/mesa_apoio.jpg",
-    }
+    },
     {
         "id": 51,
         "name": "Espelho Decorativo",
         "description": "Espelho decorativo para complementar a decoração da casa",
         "price": 450.00,
         "image": "/static/images/gifts/espelho_decorativo.jpg",
-    }
+    },
     {
         "id": 52,
         "name": "Porta Retratos",
         "description": "Porta retratos para complementar a decoração da casa",
         "price": 70.00,
         "image": "/static/images/gifts/porta_retratos.jpg",
-    }
+    },
     {
         "id": 53,
         "name": "Difusor de Ambiente",
         "description": "Difusor de ambiente para perfumdar o ambiente",
         "price": 120.00,
         "image": "/static/images/gifts/difusor_ambiente.jpg",
-    }
+    },
     {
         "id": 54,
         "name": "Filtro de Água",
