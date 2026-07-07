@@ -4,10 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!audio || !toggle) return;
 
-  const musicUrl = audio.dataset.musicUrl || '';
-  if (musicUrl) {
-    audio.src = musicUrl;
-  }
+  const playlist = (audio.dataset.playlist || audio.dataset.musicUrl || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  let currentTrackIndex = 0;
 
   const syncButtonState = (isPlaying) => {
     toggle.classList.toggle('is-paused', !isPlaying);
@@ -15,17 +17,34 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.setAttribute('aria-label', isPlaying ? 'Pausar música' : 'Tocar música');
   };
 
-  toggle.addEventListener('click', async () => {
-    if (!audio.src && musicUrl) {
-      audio.src = musicUrl;
+  const playTrack = async (index) => {
+    if (!playlist.length) return;
+
+    currentTrackIndex = index % playlist.length;
+    audio.src = playlist[currentTrackIndex];
+    audio.load();
+
+    try {
+      await audio.play();
+      syncButtonState(true);
+    } catch (error) {
+      syncButtonState(false);
     }
+  };
+
+  toggle.addEventListener('click', async () => {
+    if (!playlist.length) return;
 
     if (audio.paused) {
-      try {
-        await audio.play();
-        syncButtonState(true);
-      } catch (error) {
-        syncButtonState(false);
+      if (!audio.src) {
+        await playTrack(currentTrackIndex);
+      } else {
+        try {
+          await audio.play();
+          syncButtonState(true);
+        } catch (error) {
+          syncButtonState(false);
+        }
       }
     } else {
       audio.pause();
@@ -35,9 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   audio.addEventListener('play', () => syncButtonState(true));
   audio.addEventListener('pause', () => syncButtonState(false));
+  audio.addEventListener('ended', () => {
+    if (!playlist.length) return;
+    playTrack(currentTrackIndex + 1);
+  });
 
-  if (musicUrl) {
-    audio.play().catch(() => syncButtonState(false));
+  if (playlist.length) {
+    playTrack(0);
   }
 });
 
