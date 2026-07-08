@@ -17,18 +17,23 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.setAttribute('aria-label', isPlaying ? 'Pausar música' : 'Tocar música');
   };
 
-  const playTrack = async (index) => {
+  const playTrack = async (index, { force = false } = {}) => {
     if (!playlist.length) return;
 
     currentTrackIndex = index % playlist.length;
-    audio.src = playlist[currentTrackIndex];
-    audio.load();
+    if (audio.src !== playlist[currentTrackIndex]) {
+      audio.src = playlist[currentTrackIndex];
+      audio.load();
+    }
 
     try {
       await audio.play();
       syncButtonState(true);
     } catch (error) {
       syncButtonState(false);
+      if (force) {
+        window.addEventListener('pointerdown', () => playTrack(currentTrackIndex), { once: true });
+      }
     }
   };
 
@@ -60,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (playlist.length) {
-    playTrack(0);
+    playTrack(0, { force: true });
   }
 });
 
