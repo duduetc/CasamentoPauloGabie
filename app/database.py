@@ -198,7 +198,48 @@ def _parse_group(row) -> dict:
     group = dict(row)
     group["confirmed_names"] = json.loads(group["confirmed_names"]) if group["confirmed_names"] else []
     group["guest_names"] = json.loads(group["guest_names"]) if group.get("guest_names") else []
+    group["matched_guest_name"] = None
     return group
+
+
+def _group_matches_query(group: dict, query: str) -> tuple[bool, str | None]:
+    normalized_query = normalize_name(query)
+    if not normalized_query:
+        return False, None
+
+    stop_words = {"e", "de", "da", "do", "dos", "das", "com", "na", "no", "nas", "nos"}
+    tokens = [token for token in normalized_query.split() if token and token not in stop_words]
+    if not tokens:
+        return False, None
+
+    candidate_text = normalize_name(" ".join([group.get("name", ""), *group.get("guest_names", [])]))
+    if not candidate_text:
+        return False, None
+
+    if normalized_query in candidate_text:
+        for guest_name in group.get("guest_names", []):
+            guest_normalized = normalize_name(guest_name)
+            if guest_normalized and normalized_query in guest_normalized:
+                return True, guest_name
+        return True, None
+
+    if all(token in candidate_text for token in tokens):
+        for guest_name in group.get("guest_names", []):
+            guest_normalized = normalize_name(guest_name)
+            if not guest_normalized:
+                continue
+
+            if normalized_query in guest_normalized:
+                return True, guest_name
+
+            group_name = normalize_name(group.get("name", ""))
+            combined_name_text = normalize_name(f"{group_name} {guest_normalized}")
+            if len(tokens) > 1 and all(token in combined_name_text for token in tokens):
+                return True, guest_name
+
+        return True, None
+
+    return False, None
 
 
 def search_groups(query: str):
@@ -209,7 +250,16 @@ def search_groups(query: str):
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM rsvp_groups")
         rows = cursor.fetchall()
-    return [_parse_group(row) for row in rows if normalized_query in normalize_name(row["name"])]
+
+    results = []
+    for row in rows:
+        group = _parse_group(row)
+        matches, matched_guest_name = _group_matches_query(group, query)
+        if matches:
+            group["matched_guest_name"] = matched_guest_name
+            results.append(group)
+
+    return results
 
 
 def get_group_by_id(group_id: int):
@@ -238,10 +288,11 @@ def get_all_groups(search_query: str = None):
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM rsvp_groups ORDER BY name")
         rows = cursor.fetchall()
+
+    parsed_groups = [_parse_group(r) for r in rows]
     if search_query:
-        normalized = normalize_name(search_query)
-        rows = [r for r in rows if normalized in normalize_name(r["name"])]
-    return [_parse_group(r) for r in rows]
+        parsed_groups = [g for g in parsed_groups if _group_matches_query(g, search_query)[0]]
+    return parsed_groups
 
 
 def add_group(name: str, max_guests: int, phone: str = None, guest_names: list = None):
