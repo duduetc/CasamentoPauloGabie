@@ -64,8 +64,36 @@
   </p>
 </div>
 
+<!-- ── Search filter ───────────────────────────────────────────────── -->
+<div class="bg-charcoal border-t border-cream/10 px-6 py-6">
+  <div class="max-w-6xl mx-auto">
+    <form method="GET" action="/presentes" class="flex gap-2">
+      <input type="text"
+             name="q"
+             value="{{ search_query }}"
+             placeholder="Buscar presente por nome..."
+             class="flex-1 bg-cream/10 border border-cream/20 focus:border-sage font-body px-4 py-2.5 text-sm text-cream outline-none rounded-sm placeholder-cream/40">
+      {% if search_query %}
+        <a href="/presentes" class="border border-cream/20 hover:bg-cream/10 px-4 py-2.5 text-xs font-body text-cream rounded-sm flex items-center justify-center transition-colors">×</a>
+      {% endif %}
+      <button type="submit"
+              class="bg-sage text-charcoal hover:bg-cream font-body text-[10px] tracking-widest uppercase px-6 py-2.5 rounded-sm transition-colors">
+        Filtrar
+      </button>
+    </form>
+  </div>
+</div>
+
 <!-- ── Gift grid ───────────────────────────────────────────────── -->
 <section class="max-w-6xl mx-auto px-6 py-16">
+  {% if not gifts %}
+  <div class="text-center py-12">
+    <p class="font-body text-charcoal/40 text-lg">Nenhum presente encontrado com "{{ search_query }}"</p>
+    <a href="/presentes" class="inline-block mt-4 border border-charcoal/20 hover:bg-charcoal hover:text-cream font-body text-xs tracking-widest uppercase py-2.5 px-6 transition-all duration-300">
+      Ver todos os presentes
+    </a>
+  </div>
+  {% else %}
   <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
     {% for gift in gifts %}
     {% set pct = [[(gift.contributed / gift.price * 100), 0] | max, 100] | min %}
@@ -118,6 +146,7 @@
     </article>
     {% endfor %}
   </div>
+  {% endif %}
 </section>
 
 {% endblock %}

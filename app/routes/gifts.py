@@ -403,10 +403,14 @@ def _gifts_with_contributions() -> list:
 
 
 @router.get("/presentes", response_class=HTMLResponse)
-async def gifts_page(request: Request):
+async def gifts_page(request: Request, q: str = None):
+    gifts = _gifts_with_contributions()
+    if q:
+        query = q.lower().strip()
+        gifts = [g for g in gifts if query in g["name"].lower() or query in g["description"].lower()]
     return templates.TemplateResponse(
         "pages/gifts.html",
-        {"request": request, "gifts": _gifts_with_contributions()},
+        {"request": request, "gifts": gifts, "search_query": q or ""},
     )
 
 
