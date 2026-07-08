@@ -283,14 +283,14 @@ def add_groups_bulk(rows: list[dict]) -> tuple[int, int]:
     return inserted, duplicates
 
 
-def update_group(group_id: int, name: str, max_guests: int, phone: str = None):
+def update_group(group_id: int, name: str, max_guests: int, phone: str = None, guest_names: list = None):
     ph = _p()
     with get_db() as conn:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                f"UPDATE rsvp_groups SET name={ph}, max_guests={ph}, phone={ph} WHERE id={ph}",
-                (name.strip(), max_guests, phone or None, group_id),
+                f"UPDATE rsvp_groups SET name={ph}, max_guests={ph}, phone={ph}, guest_names={ph} WHERE id={ph}",
+                (name.strip(), max_guests, phone or None, json.dumps(guest_names, ensure_ascii=False) if guest_names else None, group_id),
             )
             conn.commit()
             return True, "Convite atualizado com sucesso."

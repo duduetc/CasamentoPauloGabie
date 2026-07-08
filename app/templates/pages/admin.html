@@ -143,6 +143,23 @@
             <input type="text" name="phone" placeholder="(11) 99999-9999"
                    class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
           </div>
+          
+          <!-- Convidados aninhados -->
+          <div class="border-t border-charcoal/10 pt-3 mt-3">
+            <label class="font-body text-xs text-charcoal/60 uppercase block mb-2">
+              Convidados <span class="text-charcoal/30">(filhos, acompanhantes...)</span>
+            </label>
+            <div id="new-guest-inputs" class="space-y-2">
+              <input type="text" name="guest_names" placeholder="Nome do convidado (opcional)"
+                     class="w-full bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+            </div>
+            <button type="button"
+                    onclick="addNewGuestInput()"
+                    class="mt-2 w-full text-charcoal border border-charcoal/20 hover:bg-charcoal/5 font-body text-xs tracking-wider uppercase py-2 rounded-sm transition-colors">
+              + Adicionar Convidado
+            </button>
+          </div>
+
           <button type="submit"
                   class="w-full bg-charcoal text-cream hover:bg-sage font-body text-xs tracking-widest uppercase py-3 transition-all duration-300">
             Adicionar Convite
@@ -302,4 +319,25 @@
 
   </div>
 </div>
+
+<script>
+  function addNewGuestInput() {
+    const container = document.getElementById('new-guest-inputs');
+    const div = document.createElement('div');
+    div.className = 'flex gap-2';
+    div.innerHTML = `
+      <input type="text"
+             name="guest_names"
+             placeholder="Nome do convidado (opcional)"
+             class="flex-1 bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-3 py-2 text-sm outline-none rounded-sm">
+      <button type="button"
+              onclick="this.parentElement.remove()"
+              class="px-3 py-2 border border-red-200 hover:bg-red-50 text-red-600 text-xs rounded-sm transition-colors">
+        ✕
+      </button>
+    `;
+    container.appendChild(div);
+  }
+</script>
+
 {% endblock %}

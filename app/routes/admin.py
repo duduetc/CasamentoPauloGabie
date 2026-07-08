@@ -62,8 +62,10 @@ async def admin_page(request: Request, q: str = None):
 
 
 @router.post("/admin/convite", response_class=HTMLResponse)
-async def admin_add_invite(request: Request, name: str = Form(...), max_guests: int = Form(...), phone: str = Form("")):
-    success, msg_or_id = database.add_group(name, max_guests, phone or None)
+async def admin_add_invite(request: Request, name: str = Form(...), max_guests: int = Form(...), phone: str = Form(""), guest_names: list = Form(None)):
+    # Filtra nomes vazios
+    guest_list = [g.strip() for g in (guest_names or []) if g and g.strip()]
+    success, msg_or_id = database.add_group(name, max_guests, phone or None, guest_names=guest_list or None)
     return _redirect("/admin")
 
 
@@ -148,8 +150,10 @@ async def admin_edit_form(request: Request, group_id: int):
 
 
 @router.post("/admin/convite/{group_id}/editar", response_class=HTMLResponse)
-async def admin_edit_invite(request: Request, group_id: int, name: str = Form(...), max_guests: int = Form(...), phone: str = Form("")):
-    success, msg = database.update_group(group_id, name, max_guests, phone or None)
+async def admin_edit_invite(request: Request, group_id: int, name: str = Form(...), max_guests: int = Form(...), phone: str = Form(""), guest_names: list = Form(None)):
+    # Filtra nomes vazios
+    guest_list = [g.strip() for g in (guest_names or []) if g and g.strip()]
+    success, msg = database.update_group(group_id, name, max_guests, phone or None, guest_names=guest_list or None)
     if not success:
         group = database.get_group_by_id(group_id)
         return templates.TemplateResponse(
