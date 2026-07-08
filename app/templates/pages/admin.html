@@ -58,6 +58,18 @@
   </div>
 
   <!-- ── PRESENTES ── -->
+  {% if request.query_params.get('removed') %}
+  <div class="mb-6 bg-sage/10 border border-sage/30 text-sage font-body text-sm px-5 py-3 rounded-sm">
+    Valor removido com sucesso das contribuições.
+  </div>
+  {% endif %}
+
+  {% if request.query_params.get('removal_error') %}
+  <div class="mb-6 bg-red-50 border border-red-200 text-red-700 font-body text-sm px-5 py-3 rounded-sm">
+    Não foi possível remover esse valor porque ele é maior do que o total já acumulado para o presente.
+  </div>
+  {% endif %}
+
   <div class="bg-white border border-charcoal/8 rounded-sm shadow-xs mb-10">
     <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180')"
             class="w-full flex items-center justify-between px-6 py-4 text-left">
@@ -73,14 +85,22 @@
     <div class="hidden px-6 pb-6 space-y-3 border-t border-charcoal/8 pt-4">
       {% for g in gift_stats %}
       {% set pct = [[g.contributed / g.price * 100, 0]|max, 100]|min %}
-      <div>
+      <div class="border border-charcoal/8 rounded-sm p-3">
         <div class="flex justify-between items-baseline mb-1">
           <span class="font-body text-sm text-charcoal">{{ g.name }}</span>
           <span class="font-body text-xs text-muted">R$ {{ "%.0f"|format(g.contributed) }} / R$ {{ "%.0f"|format(g.price) }}</span>
         </div>
-        <div class="h-1 bg-charcoal/8 rounded-full">
+        <div class="h-1 bg-charcoal/8 rounded-full mb-3">
           <div class="h-1 bg-sage rounded-full transition-all" style="width: {{ pct }}%"></div>
         </div>
+        <form action="/admin/contribuicoes/{{ g.id }}/remover" method="POST" class="flex flex-wrap items-center gap-2">
+          <input type="number" name="amount" step="0.01" min="0.01" max="{{ g.contributed }}" placeholder="Valor"
+                 class="w-24 bg-cream/20 border border-charcoal/20 focus:border-sage font-body px-2 py-1.5 text-xs outline-none rounded-sm">
+          <button type="submit"
+                  class="border border-red-200 hover:bg-red-50 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-red-600 transition-all rounded-sm">
+            Remover
+          </button>
+        </form>
       </div>
       {% endfor %}
     </div>

@@ -170,3 +170,16 @@ async def admin_reset_invite(request: Request, group_id: int):
 async def admin_delete_invite(request: Request, group_id: int):
     database.delete_group(group_id)
     return _redirect("/admin")
+
+
+@router.post("/admin/contribuicoes/{gift_id}/remover", response_class=HTMLResponse)
+async def admin_remove_contribution(request: Request, gift_id: int, amount: float = Form(...)):
+    from app.routes.gifts import GIFTS
+
+    gift = next((g for g in GIFTS if g["id"] == gift_id), None)
+    gift_name = gift["name"] if gift else ""
+    removed = database.remove_contribution(gift_id, amount, gift_name=gift_name)
+
+    if removed:
+        return RedirectResponse(url="/admin?removed=1", status_code=303)
+    return RedirectResponse(url="/admin?removal_error=1", status_code=303)
