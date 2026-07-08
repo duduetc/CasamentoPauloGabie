@@ -45,7 +45,7 @@ async def admin_page(request: Request, q: str = None):
     groups = database.get_all_groups(search_query=q)
     totals = database.get_all_contributions_totals()
     gift_stats = [
-        {"name": g["name"], "price": g["price"], "contributed": totals.get(g["id"], 0.0)}
+        {"id": g["id"], "name": g["name"], "price": g["price"], "contributed": totals.get(g["id"], 0.0)}
         for g in GIFTS
     ]
     return templates.TemplateResponse(
