@@ -212,8 +212,8 @@
         </button>
 
         <!-- Dots -->
-        <div class="flex justify-center gap-2 mt-4" id="gallery-dots">
-          {% for i in range(4) %}
+        <div class="flex justify-center gap-2 mt-4 flex-wrap" id="gallery-dots">
+          {% for i in range(10) %}
           <button aria-label="Foto {{ i+1 }}"
                   class="gallery-dot w-1.5 h-1.5 rounded-full transition-all duration-300 {% if i == 0 %}bg-sage w-4{% else %}bg-cream/30{% endif %}"
                   data-index="{{ i }}"></button>
@@ -229,7 +229,7 @@
 (function() {
   const track = document.getElementById('gallery-track');
   const dots  = document.querySelectorAll('.gallery-dot');
-  const total = 4;
+  const total = dots.length;
   let cur = 0;
 
   function goTo(n) {
