@@ -157,6 +157,33 @@ def add_contribution(gift_id: int, gift_name: str, contributor_name: str, amount
         return row_id
 
 
+def remove_contribution(gift_id: int, amount: float, gift_name: str = "", contributor_name: str = "Ajuste administrativo", message: str = "Remoção administrativa") -> bool:
+    amount = float(amount)
+    if amount <= 0:
+        return False
+
+    totals = get_all_contributions_totals()
+    current_total = float(totals.get(gift_id, 0.0))
+    if amount > current_total + 1e-9:
+        return False
+
+    ph = _p()
+    with get_db() as conn:
+        cursor = conn.cursor()
+        if USE_POSTGRES:
+            cursor.execute(
+                f"INSERT INTO contributions (gift_id, gift_name, contributor_name, amount, message, confirmed_at) VALUES ({ph},{ph},{ph},{ph},{ph},{ph})",
+                (gift_id, gift_name or "", contributor_name, -amount, message or None, datetime.now().isoformat()),
+            )
+        else:
+            cursor.execute(
+                f"INSERT INTO contributions (gift_id, gift_name, contributor_name, amount, message, confirmed_at) VALUES ({ph},{ph},{ph},{ph},{ph},{ph})",
+                (gift_id, gift_name or "", contributor_name, -amount, message or None, datetime.now().isoformat()),
+            )
+        conn.commit()
+    return True
+
+
 def get_all_contributions_totals() -> dict:
     with get_db() as conn:
         cursor = conn.cursor()
