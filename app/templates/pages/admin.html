@@ -203,8 +203,17 @@
     <!-- Lista de Convites e Busca -->
     <div class="bg-white border border-charcoal/8 p-6 rounded-sm shadow-xs md:col-span-2">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-charcoal/10">
-        <h3 class="font-display text-lg text-charcoal">Lista de Convidados</h3>
-        
+        <div class="flex items-center gap-3">
+          <h3 class="font-display text-lg text-charcoal">Lista de Convidados</h3>
+          <a href="/admin/exportar"
+             class="flex items-center gap-1.5 border border-charcoal/20 hover:bg-charcoal hover:text-cream font-body text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-sm transition-all duration-300 text-charcoal">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+            </svg>
+            Exportar CSV
+          </a>
+        </div>
+
         <!-- Formulário de busca rápida -->
         <form method="GET" action="/admin" class="flex gap-1 w-full sm:w-auto">
           <input type="text"
