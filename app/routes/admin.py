@@ -176,6 +176,34 @@ async def admin_delete_invite(request: Request, group_id: int):
     return _redirect("/admin")
 
 
+@router.get("/admin/exportar")
+async def admin_export_csv():
+    groups = database.get_all_groups()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["convite", "vagas", "telefone", "status", "confirmados", "nomes_confirmados", "motivo_recusa"])
+
+    for g in groups:
+        confirmed_names = ", ".join(g.get("confirmed_names") or [])
+        writer.writerow([
+            g["name"],
+            g["max_guests"],
+            g.get("phone") or "",
+            g.get("status") or "pending",
+            g.get("confirmed_count") or 0,
+            confirmed_names,
+            g.get("declined_reason") or "",
+        ])
+
+    content = output.getvalue().encode("utf-8-sig")
+    return Response(
+        content=content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=convidados.csv"},
+    )
+
+
 @router.post("/admin/contribuicoes/{gift_id}/remover", response_class=HTMLResponse)
 async def admin_remove_contribution(request: Request, gift_id: int, amount: float = Form(...)):
     from app.routes.gifts import GIFTS
