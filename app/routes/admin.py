@@ -66,7 +66,7 @@ async def admin_add_invite(request: Request, name: str = Form(...), max_guests: 
     # Filtra nomes vazios
     guest_list = [g.strip() for g in (guest_names or []) if g and g.strip()]
     success, msg_or_id = database.add_group(name, max_guests, phone or None, guest_names=guest_list or None)
-    return _redirect("/admin")
+    return RedirectResponse(url="/admin", status_code=303)
 
 
 @router.post("/admin/importar", response_class=HTMLResponse)
